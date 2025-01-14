@@ -1,0 +1,30 @@
+====> Instructions MIPS pour Minijava (MipsWriter) <====
+==> Jumps <==
+jump(String name)     "j    " + name
+jumpIfNot(Reg r0, String name)
+                      "beq  " + r0 + ", $zero, " + name
+jumpIn(String name)   "jal  " + name
+jumpOut()             "jr $ra"
+==> Load/Store <==
+load(Reg r0, int immediate)
+                      "li   " + r0 + ", " + immediate 
+loadOffset(Reg r0, int offset, Reg r1)
+                      "lw   " + r0 + ", " + offset + "(" + r1 + ")"
+storeOffset(Reg r0, int offset, Reg r1)
+                      "sw   " + r0 + ", " + offset + "(" + r1 + ")"
+move(Reg r0, Reg r1)  "move " + r0 + ", " + r1  
+==> Operations <==
+plus(Reg r0, Reg r1)  "add  " + r0 + ", " + r0 + ", " + r1
+plus(Reg r0, int immediate)
+                      "addi " + r0 + ", " + r0 + ", " + immediate
+moins(Reg r0, Reg r1) "sub  " + r0 + ", " + r0 + ", " + r1
+fois(Reg r0, Reg r1)  "mult " + r0 + ", " + r1 + "\n"  +
+                      "mflo " + r0
+fois4(Reg r0)         "sll  " + r0 + ", " + r0 + ", 2"
+et(Reg r0, Reg r1)    "and  " + r0 + ", " + r0 + ", " + r1
+inferieur(Reg r0, Reg r1)
+                      "slt  " + r0 + ", " + r0 + ", " + r1
+not(Reg r0)           "seq  " + r0 + ", $zero, " + r0
+==> Misc <==
+inRange(Reg r0, Reg r1, Reg r2) // r0 = ( 0 <= r1 < r2 )
+                      "sltu " + r0 + ", " + r1 + ", " + r2);

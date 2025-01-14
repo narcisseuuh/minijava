@@ -1,0 +1,24 @@
+// NE PAS MODIFIER car c'est un fichier de référence.
+/** Erreurs Lexicales (/ syntax) */
+class Test301 {
+  // /* So should this /* and this still */ but not this */ // invalid C89 Comment
+  public static void main(String[] args) {
+    System.out.println(new Bar().Compute());
+  }
+}
+
+class Bar {
+  // int 0a; // invalid identifier
+  boolean b;
+
+  public int Compute() {
+    // a=01; // invalid Decimal Literal (should be Octal!)
+    // b=True; // not a Literal
+    // a = 3 / 4; // unknown character "/"
+    // String s; // String only in main
+    // String[] args; // only in main, (and not usable)
+    // int this; // this reserved keyword
+    //System.out.println.(42) // misleading character "." 
+    return 0;
+  }
+}

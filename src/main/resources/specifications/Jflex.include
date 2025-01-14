@@ -1,0 +1,29 @@
+// Common options and macros for JFlex
+// Usage : add "%include .." after first "%%" in .jflex file
+//   JFlex Alone    : %include Jflex.include
+//   JFlex with CUP : %include Jflex.include
+//                    %include JflexCup.include
+
+// Lexer function : "int next_token()"
+%int
+%function next_token
+
+// Counting ON : int yyline, yycolumn; long yychar;
+%line
+%column
+%char
+
+%{
+// Printing helpers
+String WHERE()    { return (yyline+1)+"/"+(yycolumn+1)+"("+(yychar+1)+")" ;}
+void ECHO()       { System.out.print( yytext() );}
+void ECHO(String categorie) { System.out.print("[" + categorie + ":" + yytext() + "]"); }
+void WARN(String msg) { System.err.println("<Warning at " + WHERE() + " : " + msg + ">"); }
+
+// main() : read stdin or file args[0]
+public static void main(String[] args) throws java.io.IOException {
+   if (args.length > 0) System.setIn(new java.io.FileInputStream(args[0]));
+   Yylex lexer = new Yylex(new java.io.InputStreamReader(System.in));
+   while (! lexer.zzAtEOF) lexer.next_token();
+}
+%}

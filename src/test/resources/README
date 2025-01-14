@@ -1,0 +1,54 @@
+
+// Basic incremental MileStone :
+Milestone/Test101.txt  hello 42
+Milestone/Test102.txt  hello 6 * 7 
+Milestone/Test103.txt  classes et méthodes (simple)
+Milestone/Test104.txt  classes et méthodes avec listes d'arguments
+Milestone/Test105.txt  classes et méthodes (complet avec listes doubles)
+Milestone/Test106.txt  expressions
+Milestone/Test107.txt  instructions
+Milestone/Test109.txt  Tableaux d'entier
+
+// Syntax Error
+SyntaxError/Test301.java  Erreurs Lexicales
+SyntaxError/Test302.java  Erreurs Syntaxiques
+
+// Semantic Error
+SemanticError/Test401.java   Contrôlé de type
+SemanticError/Test402.java   Appel de méthodes
+SemanticError/Test403.java   Héritage de classes
+SemanticError/Test404.java   404 file not fouund !!!
+SemanticError/Test405.java   Undefined variable, methodes, classes
+SemanticError/Test409.java   Contrôle de type et Tableau
+
+// Other runing examples
+Running/StressTestSyntax303.txt  Stress test (sans), syntaxiquement correct
+Running/StressTestSyntax309.txt  Stress test (avec tableaux), syntaxiquement correct
+Running/Test201.txt    Opérateurs
+Running/Test202.txt    Expressions et Variables
+Running/Test203.txt    Initialisation, ...
+Running/Test204.txt    Appel de fonction et arguments (<4)
+Running/Test214.txt    Appel de fonction et arguments (>=4)
+Running/Test209.txt    Tableaux d'entiers
+Running/Test219.txt    Tableaux de booléens
+Running/AckermannFunction.txt           Appel Récursif
+Running/ImplemSimplisticBigNum.txt      BigNum simpliste avec Tableaux
+Running/PeanoPlusUTF8Матрёшка.txt       UTF8 cyrillique, equals(), pointeur et récursion
+
+// From book "Modern Compilation in Java" Andrew J. Appel
+Modern/BinarySearch.java  Recherche sur Tableau
+Modern/BinaryTree.java    Structure d'arbre de recherche
+Modern/BinaryVisitor.java BinaryTree avec Visiteur (et polymorphisme)
+Modern/BubbleSort.java    Tri itératif sur tableau
+Modern/Factorial.java     Appel Récursif
+Modern/LinearSearch.java  Recherche sur Tableau
+Modern/LinkedList.java    Structure de liste Chainée, ( avec polymorphisme )
+Modern/QuickSort.java     Tri récursif sur tableau
+
+// One day... the grail
+Test901.txt   Héritage/surcharge/polymorphisme...
+
+
+
+
+

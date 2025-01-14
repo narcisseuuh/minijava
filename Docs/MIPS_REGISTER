@@ -1,0 +1,19 @@
+====> Registres et Convention d'appel MIPS <====
+$gp     Référence aux variables globales 
+$fp     Frame Pointer :
+          Référence aux variables locales de méthode
+          Sauvegardé par appelant
+$sp     La pile ...
+$ra     Adresse de retour
+          Sauvegardé par appelé
+$a0-$a3 Les 4 premiers arguments de méthode.
+          $a0=this
+          Sauvegardés par appelant
+$v0     Valeurs de retour de méthode
+          Non sauvegardés
+$v0 $v1 Calculs temporaires des instructions IR
+          Non sauvegardés
+$s0-$s7 Inutilisés, disponibles si besoin 
+          Sauvegardés par appelé
+$t0-$t9 Inutilisés, disponibles si besoin
+          Sauvegardés par appelant

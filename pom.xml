@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>eu.telecomsudparis.compil</groupId>
+  <artifactId>minijava-PERRIN_Augustin-HOSTETTLER_Mael</artifactId>
+  <packaging>jar</packaging>
+  <version>0.1.0-SNAPSHOT</version>
+
+  <name>Squelette du projet MiniJAVA</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    <maven.resources.encoding>UTF-8</maven.resources.encoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <!-- les options qui nous intéressent -->
+    <spec.jflex>${project.basedir}/src/main/resources/specifications/minijava.jflex</spec.jflex>
+    <spec.cup>${project.basedir}/src/main/resources/specifications/minijava.cup</spec.cup>
+    <pkg.syntax>phase.b_syntax</pkg.syntax>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>local-repo-for-mars</id>
+      <url>file://${project.basedir}/lib</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.github.vbmacher</groupId>
+      <artifactId>java-cup-runtime</artifactId>
+      <version>11b-20160615-3</version>
+    </dependency>
+    <dependency>
+      <groupId>courses.missouristate.edu</groupId>
+      <artifactId>KenVollmar.MARS</artifactId>
+      <version>4.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.23.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+        <version>2.23.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.10.2</version>
+        <scope>test</scope>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <plugins>
+      <!-- enforce JDK version >= 17 and Maven version >= 3.8.6 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <id>enforce-versions</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[17,)</version>
+                  <message>
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+You need a JDK version >= 17 and a Maven version >= 3.8.6
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</message>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[3.8,)</version>
+                  <message>
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+You need a JDK version >= 17 and a Maven version >= 3.8.6
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</message>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- maven-eclipse configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.10</version>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
+      <!-- jflex-maven-plugin -->
+      <plugin>
+        <groupId>de.jflex</groupId>
+        <artifactId>jflex-maven-plugin</artifactId>
+        <version>1.8.2</version>
+        <executions>
+          <execution>
+            <?m2e execute onConfiguration,onIncremental?>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <!-- https://jflex-de.github.io/jflex-web/jflex-maven-plugin/usage.html -->
+              <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
+              <lexDefinitions>
+                <lexDefinition>${spec.jflex}</lexDefinition>
+              </lexDefinitions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- cup-maven-plugin: https://github.com/vbmacher/cup-maven-plugin -->
+      <plugin>
+        <groupId>com.github.vbmacher</groupId>
+        <artifactId>cup-maven-plugin</artifactId>
+        <version>11b-20160615-3</version>
+        <executions>
+          <execution>
+            <?m2e ignore?>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <!-- https://github.com/vbmacher/cup-maven-plugin -->
+          <staleMillis>10000000</staleMillis> <!-- necessary for Eclipse, which bug when re-excuting when pb in CUP file -->
+          <cupDefinition>${spec.cup}</cupDefinition>
+          <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
+          <expectedConflicts>0</expectedConflicts>
+          <noSummary>false</noSummary> <!-- print summary -->
+          <progress>true</progress> <!-- print progress -->
+          <dumpGrammar>false</dumpGrammar> <!-- do not print a human-readable dump of the symbols and grammar -->
+          <dumpStates>false</dumpStates> <!-- do not produce a dump of parse state machine -->
+          <dumpTables>false</dumpTables> <!-- do not produce a dump of the parse tables -->
+<!--          <debug>false</debug> --> <!-- do not produce voluminous internal debugging information about the system as it runs -->
+          <packageName>${pkg.syntax}</packageName>
+          <className>parser</className>
+          <symbolsName>sym</symbolsName>
+          <symbolsInterface>false</symbolsInterface>
+          <noPositions>false</noPositions>
+          <locations>true</locations>
+        </configuration>
+      </plugin>
+      <!-- java compiler configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <source>17</source>
+          <target>17</target>
+        </configuration>
+      </plugin>
+      <!-- surefire configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+        <configuration>
+	  <useManifestOnlyJar>false</useManifestOnlyJar>
+	  <useSystemClassLoader>true</useSystemClassLoader>
+	  <enableAssertions>true</enableAssertions>
+	  <reuseForks>false</reuseForks>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

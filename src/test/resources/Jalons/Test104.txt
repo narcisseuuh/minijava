@@ -1,0 +1,19 @@
+// NE PAS MODIFIER car c'est un fichier de référence.
+// milestone 4 : classes et méthodes avec listes d'arguments
+class Test104 {
+  public static void main(String[] args) {
+    System.out.println(new Test3().Start(6,7));
+  }
+}
+
+class Test2 {
+  public int Start(int i, int j) {
+    return i * j;
+  }
+}
+
+class Test3 extends Test2 {
+  public int zero() {
+    return 0;
+  }
+}

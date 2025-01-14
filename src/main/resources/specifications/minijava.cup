@@ -1,0 +1,47 @@
+package phase.b_syntax;
+import phase.b_syntax.ast.*; // définition de l'AST
+
+action code {:
+:};
+
+/* Lexèmes (Tokens) */
+terminal CLASS, MAIN, OUT, PRINTLN, PUBLIC, STATIC, STRING, SYSTEM, VOID;
+terminal DOT, SEMI, LBRACE, RBRACE, LPAREN, RPAREN;
+terminal LBRACK, RBRACK;
+
+/* Lexèmes avec valeur sémantique */
+terminal Integer LIT_INT;
+terminal String  IDENT;
+
+/* Variables de la grammaire et Arbre de syntaxe */
+nonterminal Axiom           axiom;
+nonterminal KlassMain       klassMain;
+nonterminal Ident           ident;
+nonterminal Stmt            stmt;
+nonterminal Expr            expr;
+
+/* Associativités et Priorités */
+
+/* Règles de Productions */
+axiom     ::= klassMain:a
+                {: RESULT = Axiom.create(a, new AstList<>());
+                   RESULT.addPosition(axleft, axright); :}
+;
+klassMain ::= CLASS:a ident:b LBRACE PUBLIC STATIC VOID MAIN
+              LPAREN STRING LBRACK RBRACK ident:c RPAREN
+              LBRACE stmt:d RBRACE RBRACE:z
+                {: RESULT = KlassMain.create(b, c, d);
+                   RESULT.addPosition(axleft, zxright); :}
+;
+ident     ::= IDENT:a
+                {: RESULT = Ident.create(a);
+                   RESULT.addPosition(axleft, axright); :}
+;
+stmt      ::= SYSTEM:a DOT OUT DOT PRINTLN LPAREN expr:b RPAREN SEMI:z
+                {: RESULT = StmtPrint.create(b);
+                   RESULT.addPosition(axleft, zxright); :}
+;
+expr      ::= LIT_INT:a
+                {: RESULT = ExprLiteralInt.create(a);
+                   RESULT.addPosition(axleft, axright); :}
+;

@@ -1,0 +1,42 @@
+m1 Axiom      ::= ClassMain ClassList
+m1 ClassMain  ::= "class" Identifier "{" "public" "static" "void" "main"
+                  "(" "String" "[" "]" Identifier ")" "{" Statement "}" "}"
+m1 Identifier ::= <IDENTIFIER>
+m1 ClassList  ::= /*vide */
+m3             |  (Class)+
+m3 Class      ::= "class" Identifier Parent "{" ClassBody "}" 
+m3 Parent     ::= ("extends" Identifier)?
+m3 ClassBody  ::= /* vide */
+#m3/m4-only    |  Method  
+m5             |  (Variable|Method)+
+m3 Method     ::= "public" Type Identifier "(" FormalArgs ")"
+                  "{" MethodBody "return" Expression ";" "}"
+m3 MethodBody ::= /* vide */
+m5             |  (Variable|Statement)+ 
+m5 Variable   ::= Type Identifier ";"
+m3 Type       ::= Identifier
+m3             |  "int"
+m3             |  "boolean"
+m3 FormalArgs ::= /* vide */
+m4             |  Type Identifier ("," Type Identifier)* 
+m3 Args       ::= /* vide */
+m4             |  Expression ("," Expression)*
+m1 Statement  ::= "System" "." "out" "." "println" "(" Expression ")" ";"
+m6             |  Identifier "=" Expression ";"
+m7             |  "{" MethodBody "}"
+m7             |  "if" "(" Expression ")" Statement "else" Statement
+m7             |  "while" "(" Expression ")" Statement
+m1 Expression ::= <INTEGER_LITERAL>
+m2             |  "(" Expression ")"
+m2             |  Expression ("&&"|"<"|"+"|"-"|"*") Expression
+m3             |  Expression "." Identifier "(" Args")"
+m3             |  "new" Identifier "(" ")"
+m4             |  Identifier
+m6             |  <BOOLEAN_LITERAL>
+m6             |  "!" Expression
+m6             |  "this"
+m9 Type       ::= "int" "[" "]"
+m9 Expression ::= Expression "[" Expression "]"
+m9             |  Expression "." "length"
+m9             |  "new" "int" "[" Expression "]"
+m9 Statement  ::= Identifier "[" Expression "]" "=" Expression ";"

@@ -1,0 +1,31 @@
+====> Séquences d'appel <====
+appelant :
+  instruction*
+  ### OUVERTURE ###
+  # - Sauvegarde dans la pile des registres non "préservés" : $fp, $a*, $t*, $v*
+  # - Écriture des arguments dans $a0, $a1, $a2, $a3, puis dans la pile.
+  # N.B. Danger écrasement : si les valeurs des arguments de l'appelé dépendent
+  #    des arguments de l'appelant, il ne faut pas prendre ces valeurs dans
+  #    les registres $a_i mais dans la sauvegarde des $a_i sur la pile !
+  jal appelé
+  ## FERMETURE ###
+  # - Lecture de la valeur de retour dans $v0
+  # - Suppression des arguments eventuels dans la pile
+  # - Restauration des registres non "préservés"
+  instruction*
+  
+appelé:
+  ### PROLOGUE ###
+  # - Création du cadre d'appel sur la pile ($fp = $sp , $sp += framesize)
+  # - Sauvegarde dans le cadre d'appel des registres "préservés" : $ra, $s*
+  # - liaisons des arguments $a0, $a1, $a2, $a3 comme variables locales :
+  #     allocation de ces variables dans les registres $a_i$
+  #       versus
+  #     recopie dans la frame avec les autres variables locales (évite le
+  #     risque d'écrasement des $a_i)
+  instruction*
+  ### EPIlOGUE ###
+  #  Écriture de la valeur de retour dans $v0
+  #  Restauration des registres "préservés"
+  #  Suppression du cadre d'appel/restauration de la pile ($sp = $fp)
+  jr $ra

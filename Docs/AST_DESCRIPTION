@@ -1,0 +1,49 @@
+===> Classes Abstraites <===
+AstNode   (AstNode... fils)         // classe ancêtre ...
+Expr      (AstNode... fils)         // classe abstraite pour Expr*
+Stmt      (AstNode... fils)         // classe abstraite pour Stmt* 
+===> Listes <===
+AstList<R extends AstNode> ()       // AstNode avec fils homogènes
+          void add(R node)          // avec construction itérative
+===> Déclarations et autres <===
+Axiom     (KlassMain klassMain, AstList<Klass> klassList)
+                                    // Programme Minijava
+Formal    (Type typeId, Ident varId)// Paramètre formel de méthode
+Ident     (String name)             // Identificateurs
+Klass     (Ident klassId, Ident parentId, AstList<Variable> vars,
+           AstList<Method> methods) // Déclaration de classe
+KlassMain (Ident klassId, Ident argId, Stmt stmt)
+                                    // Déclaration classe main()
+Method    (Type returnType, Ident methodId, AstList<Formal> fargs,
+           AstList<Variable> vars, AstList<Stmt> stmts, Expr returnExp)
+                                    // Déclaration de méthode
+Type      (String name)             // Identificateur de type
+          (main.EnumType t)         // idem : autre constructeur
+Variable  (Type typeId, Ident varId)// Déclaration de variable
+===> Expression <===
+ExprArrayLength (Expr array)        // Taille d'un tableau
+ExprArrayLookup (Expr array, Expr index)
+                                    // Accès élément d'un tableau
+ExprArrayNew    (Expr size)         // Instanciation d'un tableau entiers
+                (Expr size, main.EnumType type) // autres types de tableau
+ExprCall        (Expr receiver, Ident methodId, AstList<Expr> args)
+                                    // Appel de méthode d'objet
+ExprIdent       (Ident varId)       // Utilisation de Variable 
+ExprLiteralBool (Boolean value)     // Constante Booléenne
+ExprLiteralInt  (Integer value)     // Constante Entière
+ExprNew         (Ident klassId)     // Instanciation d'objet
+ExprOpBin       (Expr expr1, main.EnumOper op, Expr expr2)
+                                    // Opérateur Binaire
+ExprOpUn        (main.EnumOper op, Expr expr)
+                                    // Opérateur Unaire
+===> Instructions <===
+StmtArrayAssign (Ident arrayId, Expr index, Expr value)
+                                    // Affectation élément tableau
+StmtAssign      (Ident varId,Expr value)
+                                    // Affectation de variable
+StmtBlock       (AstList<Variable> vars, AstList<Stmt> stmts)
+                                    // Bloc d'instructions
+StmtIf          (Expr test, Stmt ifTrue, Stmt ifFalse)
+                                    // Instruction if then else
+StmtPrint       (Expr expr)         // Impression valeur entière 
+StmtWhile       (Expr test, Stmt body) // Boucle While. 

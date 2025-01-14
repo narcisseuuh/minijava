@@ -1,0 +1,42 @@
+===>  IR.java <===
+ List<IRquadruple> program;    // Programme intermédiaire
+ Scope rootScope;              // Table de symboles de l'AST
+ List<IRtempo> tempos;         // Symboles IR : tempo
+ List<IRconst> consts;         // Symboles IR : const
+ List<IRlabel> labels;         // Symboles IR : label
+ IRtempo newTemp(String scope) // Variable Tempo (scope=currentMethodName)
+ IRconst newConst(int value)   // Variable Const
+ IRlabel newLabel(String name) // Variable Label
+ IRlabel newLabel()            // Variable label (nom unique autogénéré)
+===> IRQuadruple.java : abstract for Q*.java <===
+IRquadruple(main.EnumOper op, IRvariable arg1, IRvariable arg2, IRvariable result)
+                               // "result = arg1 op arg2"
+===> Q*.java <===
+QAssign(main.EnumOper op, IRvariable arg1, IRvariable arg2, IRvariable result)
+                               // result = arg1 op arg2
+QAssignArrayFrom(IRvariable arg1, IRvariable arg2, IRvariable result)
+                               // result = arg1[arg2]
+QAssignArrayTo(IRvariable arg1, IRvariable arg2, IRvariable result)
+                               // result[arg2] = arg1
+QAssignUnary(main.EnumOper op, IRvariable arg1, IRvariable result)
+                               // result = op arg1
+QCall(IRlabel arg1, IRconst arg2, IRvariable result)
+                               // result = Call arg1 <nbParam=arg2>
+QCallStatic(IRlabel arg1, IRconst arg2) 
+                               // static void Call arg1 <nbParam=arg2>
+QCopy(IRvariable arg1, IRvariable result)
+                               // result = arg1
+QJump(IRlabel arg1)            // Goto arg1
+QJumpCond(IRlabel arg1, IRvariable arg2)
+                               // IfFalse arg2 Goto arg1
+QLabel(IRlabel arg1)           // Label arg1
+QLabelMeth(IRlabel arg1, IRConst arg2)
+                               // LabelMeth arg1 <nbParam=arg2>
+QLength(IRvariable arg1, IRvariable result)
+                               // result = length(arg1)
+QNew(IRlabel arg1, IRvariable result)
+                               // result = new arg1
+QNewArray(IRlabel arg1, IRvariable arg2, IRvariable result)
+                               // result = new arg1[arg2]
+QParam(IRvariable arg1)        // Param arg1
+QReturn(IRvariable arg1)       // Return arg1
