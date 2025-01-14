@@ -11,6 +11,7 @@ Ignore     = {WS} | {EOLComment} | {C89Comment}
 Integer    = 0 | [1-9] [0-9]*
 Boolean    = "true" | "false"
 Ident      = [:jletter:] [:jletterdigit:]*
+Bin_op     = "&&" | "<" | "+" | "-" | "*"
 
 %%
 //// Mots Clés
@@ -23,8 +24,18 @@ Ident      = [:jletter:] [:jletterdigit:]*
 "String"  { return TOKEN(STRING);  }
 "System"  { return TOKEN(SYSTEM);  }
 "void"    { return TOKEN(VOID);    }
+"return"  { return TOKEN(RETURN);  }
+"int"     { return TOKEN(INT);     }
+"boolean" { return TOKEN(BOOL);    }
+"if"      { return TOKEN(IF);      }
+"else"    { return TOKEN(ELSE);    }
+"while"   { return TOKEN(WHILE);   }
+"new"     { return TOKEN(NEW);     }
+"this"    { return TOKEN(THIS);    }
+"extends" { return TOKEN(EXTENDS); }
 
 //// Operateurs
+{Bin_op}  { return TOKEN(BIN_OP, yytext()); }
 
 //// Ponctuations 
 "."       { return TOKEN(DOT);     }
@@ -35,9 +46,13 @@ Ident      = [:jletter:] [:jletterdigit:]*
 "}"       { return TOKEN(RBRACE);  }
 "("       { return TOKEN(LPAREN);  }
 ")"       { return TOKEN(RPAREN);  }
+","       { return TOKEN(COL);     }
+"="       { return TOKEN(EQ);      }
+"!"       { return TOKEN(NOT);     }
 
 //// Literals, Identificateurs
-{Integer} { return TOKEN(LIT_INT,  Integer.parseInt(yytext()));     }  
+{Integer} { return TOKEN(LIT_INT,  Integer.parseInt(yytext()));     }
+{Boolean} { return TOKEN(LIT_BOOL, Boolean.parseBoolean(yytext())); }
 {Ident}   { return TOKEN(IDENT,    new String(yytext())) ;          }
 
 //// Ignore, Ramasse Miette
