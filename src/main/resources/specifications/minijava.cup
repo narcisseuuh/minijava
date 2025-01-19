@@ -1,13 +1,32 @@
 package phase.b_syntax;
 import phase.b_syntax.ast.*; // définition de l'AST
+import compil.EnumOper; // import EnumOper
+import compil.EnumType;
 
 action code {:
+   public EnumOper stringToEnumOper(String str) {
+      switch (str) {
+         case "+":
+            return EnumOper.PLUS;
+         case "-":
+            return EnumOper.MINUS;
+         case "*":
+            return EnumOper.TIMES;
+         case "&&":
+            return EnumOper.AND;
+         case "<":
+            return EnumOper.LESS;
+         default:
+            return EnumOper.UNDEF;
+      }
+   }
 :};
 
 /* Lexèmes (Tokens) */
 terminal CLASS, MAIN, OUT, PRINTLN, PUBLIC, STATIC, STRING, SYSTEM, VOID;
-terminal RETURN, INT, BOOL, COL, EQ, IF, ELSE, WHILE, NEW, NOT, THIS, EXTENDS;
-terminal DOT, SEMI, LBRACE, RBRACE, LPAREN, RPAREN;
+terminal RETURN, INT, BOOL, COL, EQ, IF, ELSE, WHILE, NEW, NOT, EXTENDS;
+terminal DOT, SEMI, LBRACE, RBRACE;
+terminal LPAREN, RPAREN;
 terminal LBRACK, RBRACK;
 
 /* Lexèmes avec valeur sémantique */
@@ -29,8 +48,8 @@ nonterminal Method          method;
 nonterminal MethodBody      methodBody;
 nonterminal Variable        variable;
 nonterminal Type            type;
-nonterminal Formal          formalargs;
-nonterminal Formal          formalmultiargs;
+nonterminal AstList<Formal> formalargs;
+nonterminal AstList<Formal> formalmultiargs;
 nonterminal AstList<Expr>   args;
 nonterminal AstList<Expr>   multiargs;
 
@@ -49,86 +68,79 @@ klassMain ::= CLASS:a ident:b LBRACE PUBLIC STATIC VOID MAIN
                 {: RESULT = KlassMain.create(b, c, d);
                    RESULT.addPosition(axleft, zxright); :}
 ;
-klass ::= CLASS:c ident:a LBRACE klassBody RBRACE:r
-               {: RESULT = Klass.create();
+klass ::= CLASS:c ident:a LBRACE klassBody:b RBRACE:r
+               {: RESULT = Klass.create(a, Ident.create("Object"), b.attributs(), b.methodes());
                   RESULT.addPosition(cxleft, rxright); :}
-   | CLASS:c ident:a EXTENDS ident:p LBRACE klassBody RBRACE:r
-               {: RESULT = Klass.create();
+   | CLASS:c ident:a EXTENDS ident:p LBRACE klassBody:b RBRACE:r
+               {: RESULT = Klass.create(a, p, b.attributs(), b.methodes());
                   RESULT.addPosition(cxleft, rxright); :}
 ;
 klassList ::= /* vide */
-               {: RESULT = new AstList<Klass>();
-                  RESULT.addPosition(); :}
-   | klass:k klassList
-               {: RESULT = new AstList<Klass>();
-                  RESULT.addPosition(); :}
+               {: RESULT = new AstList<Klass>(); :}
+   | klass:k klassList:l
+               {: RESULT = l; RESULT.add(k);
+                  RESULT.addPosition(kxleft, lxright); :}
 ;
 klassBody ::= /* vide */
-               {: RESULT = KlassBody.create();
-                  RESULT.addPosition(); :}
-   | variable:v klassBody 
-               {: RESULT = KlassBody.create();
-                  RESULT.addPosition(); :}
-   | method:m klassBody 
-               {: RESULT = KlassBody.create();
-                  RESULT.addPosition(); :}
+            {: RESULT = KlassBody.create(); :}
+   | variable:v klassBody:k
+            {: RESULT = k; RESULT.addAttribut(v);
+              RESULT.addPosition(vxleft, kxright); :}
+   | method:m klassBody:k
+            {: RESULT = k; RESULT.addMethode(m);
+              RESULT.addPosition(mxleft, kxright); :}
 ;
-method ::= PUBLIC type:t ident:i LPAREN formalargs:a RPAREN LBRACE
-            methodBody:b RETURN expr:e SEMI RBRACE
-               {: RESULT = Method.create();
-                  RESULT.addPosition(); :}
+method ::= PUBLIC:p type:t ident:i LPAREN formalargs:a RPAREN LBRACE
+            methodBody:b RETURN expr:e SEMI RBRACE:r
+               {: RESULT = Method.create(t, i, a, b.vars(), b.instructions(), e);
+                  RESULT.addPosition(pxleft, rxright); :}
 ;
 methodBody ::= /* vide */
-               {: RESULT = MethodBody.create();
-                  RESULT.addPosition(); :}
-   | variable:v methodBody 
-               {: RESULT = MethodBody.create();
-                  RESULT.addPosition(); :}
-   | stmt:s methodBody
-               {: RESULT = MethodBody.create();
-                  RESULT.addPosition(); :}
+               {: RESULT = MethodBody.create(); :}
+   | variable:v methodBody:m
+               {: RESULT = m; RESULT.addVar(v);
+                  RESULT.addPosition(vxleft, mxright); :}
+   | stmt:s methodBody:m
+               {: RESULT = m; RESULT.addInstruction(s);
+                  RESULT.addPosition(sxleft, mxright); :}
 ;
-variable ::= type:t ident:i SEMI
-               {: RESULT = Variable.create();
-                  RESULT.addPosition(); :}
+variable ::= type:t ident:i SEMI:s
+               {: RESULT = Variable.create(t, i);
+                  RESULT.addPosition(txleft, sxright); :}
 ;
 type ::= ident:i
-               {: RESULT = Type.create();
-                  RESULT.addPosition(); :}
+               {: RESULT = Type.create(EnumType.UNDEF);
+                  RESULT.addPosition(ixleft, ixright); :}
    | INT 
-               {: RESULT = Type.create();
-                  RESULT.addPosition(); :}
+               {: RESULT = Type.create(EnumType.INT); :}
    | BOOL
-               {: RESULT = Type.create();
-                  RESULT.addPosition(); :}
+               {: RESULT = Type.create(EnumType.BOOL); :}
 ;
 formalargs ::= /* vide */
-               {: RESULT = Formal.create();
-                  RESULT.addPosition(); :}
+               {: RESULT = new AstList<Formal>(); :}
    | formalmultiargs:m
-               {: RESULT = Formal.create();
-                  RESULT.addPosition(); :}
+               {: RESULT = m;
+                  RESULT.addPosition(mxleft, mxright); :}
 ;
 formalmultiargs ::= type:t ident:i 
-               {: RESULT = Formal.create();
-                  RESULT.addPosition(); :}
-   | type:t ident:i COL formalmultiargs
-               {: RESULT = Formal.create();
-                  RESULT.addPosition(); :}
+               {: RESULT = new AstList<Formal>(); RESULT.add(Formal.create(t, i));
+                  RESULT.addPosition(txleft, ixright); :}
+   | type:t ident:i COL formalmultiargs:m
+               {: RESULT = m; RESULT.add(Formal.create(t, i));
+                  RESULT.addPosition(txleft, mxright); :}
 ;
 args ::= /* vide */
-               {: RESULT = new AstList<Expr>();
-                  RESULT.addPosition(); :}
+               {: RESULT = new AstList<Expr>(); :}
    | multiargs:m
-               {: RESULT = new AstList<Expr>();
-                  RESULT.addPosition(); :}
+               {: RESULT = m;
+                  RESULT.addPosition(mxleft, mxright); :}
 ;
 multiargs ::= expr:e
-               {: RESULT = new AstList<Expr>();
-                  RESULT.addPosition(); :}
-   | expr:e COL multiargs
-               {: RESULT = new AstList<Expr>();
-                  RESULT.addPosition(); :}
+               {: RESULT = new AstList<Expr>(); RESULT.add(e);
+                  RESULT.addPosition(exleft, exright); :}
+   | expr:e COL multiargs:m
+               {: RESULT = m; RESULT.add(e);
+                  RESULT.addPosition(exleft, mxright); :}
 ;
 ident     ::= IDENT:a
                 {: RESULT = Ident.create(a);
@@ -137,44 +149,41 @@ ident     ::= IDENT:a
 stmt      ::= SYSTEM:a DOT OUT DOT PRINTLN LPAREN expr:b RPAREN SEMI:z
                 {: RESULT = StmtPrint.create(b);
                    RESULT.addPosition(axleft, zxright); :}
-   | ident:i EQ expr:e SEMI 
-                {: RESULT = StmtAssign.create();
-                   RESULT.addPosition(); :}
-   | LBRACE methodBody:m RBRACE
-                {: RESULT = StmtBlock.create();
-                   RESULT.addPosition(); :}
-   | IF LPAREN expr:e RPAREN stmt:s1 ELSE stmt:s2
-                {: RESULT = StmtIf.create();
-                   RESULT.addPosition(); :}
-   | WHILE LPAREN expr:e RPAREN stmt:s
-                {: RESULT = StmtWhile.create();
-                   RESULT.addPosition(); :}
+   | ident:i EQ expr:e SEMI:s
+                {: RESULT = StmtAssign.create(i, e);
+                   RESULT.addPosition(ixleft, sxright); :}
+   | LBRACE:l methodBody:m RBRACE:r
+                {: RESULT = StmtBlock.create(m.vars(), m.instructions());
+                   RESULT.addPosition(lxleft, rxright); :}
+   | IF:i LPAREN expr:e RPAREN stmt:s1 ELSE stmt:s2
+                {: RESULT = StmtIf.create(e, s1, s2);
+                   RESULT.addPosition(ixleft, s2xright); :}
+   | WHILE:w LPAREN expr:e RPAREN stmt:s
+                {: RESULT = StmtWhile.create(e, s);
+                   RESULT.addPosition(wxleft, sxright); :}
 ;
 expr      ::= LIT_INT:a
                 {: RESULT = ExprLiteralInt.create(a);
                    RESULT.addPosition(axleft, axright); :}
-   | LPAREN expr:e RPAREN
-                {: RESULT = Expr.create(e);
-                   RESULT.addPosition(); :}
+   | LPAREN:l expr:e RPAREN:r
+                {: RESULT = e;
+                   RESULT.addPosition(lxleft, rxright); :}
    | expr:e1 BIN_OP:b expr:e2
-                {: RESULT = ExprOpBin.create();
-                   RESULT.addPosition(); :}
-   | expr:e DOT ident:i LPAREN args:a RPAREN
-                {: RESULT = ExprCall.create();
-                   RESULT.addPosition(); :}
-   | NEW ident:i LPAREN RPAREN
-                {: RESULT = ExprNew.create();
-                   RESULT.addPosition(); :}
+                {: RESULT = ExprOpBin.create(e1, stringToEnumOper(b), e2);
+                   RESULT.addPosition(e1xleft, e2xright); :}
+   | expr:e DOT ident:i LPAREN args:a RPAREN:r
+                {: RESULT = ExprCall.create(e, i, a);
+                   RESULT.addPosition(exleft, rxright); :}
+   | NEW:n ident:i LPAREN RPAREN:r
+                {: RESULT = ExprNew.create(i);
+                   RESULT.addPosition(nxleft, rxright); :}
    | ident:i 
-                {: RESULT = ExprIdent.create();
-                   RESULT.addPosition(); :}
+                {: RESULT = ExprIdent.create(i);
+                   RESULT.addPosition(ixleft, ixright); :}
    | LIT_BOOL:b 
-                {: RESULT = ExprLiteralBool.create();
-                   RESULT.addPosition(); :}
-   | NOT expr:e 
-                {: RESULT = ExprOpUn.create();
-                   RESULT.addPosition(); :}
-   | THIS
-                {: RESULT = Expr.create();
-                   RESULT.addPosition(); :}
+                {: RESULT = ExprLiteralBool.create(b);
+                   RESULT.addPosition(bxleft, bxright); :}
+   | NOT:n expr:e 
+                {: RESULT = ExprOpUn.create(EnumOper.NOT, e);
+                   RESULT.addPosition(nxleft, exright); :}
 ;

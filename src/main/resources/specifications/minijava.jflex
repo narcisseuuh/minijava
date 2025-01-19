@@ -31,7 +31,6 @@ Bin_op     = "&&" | "<" | "+" | "-" | "*"
 "else"    { return TOKEN(ELSE);    }
 "while"   { return TOKEN(WHILE);   }
 "new"     { return TOKEN(NEW);     }
-"this"    { return TOKEN(THIS);    }
 "extends" { return TOKEN(EXTENDS); }
 
 //// Operateurs

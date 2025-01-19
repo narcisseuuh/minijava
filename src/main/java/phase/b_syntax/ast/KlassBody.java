@@ -46,4 +46,13 @@ public record KlassBody(String label, List<AstNode> enfants, AstLocations locati
         return new KlassBody(KlassBody.class.getSimpleName(), new ArrayList<>(), new AstLocations(), new AstList<>(),
                 new AstList<>());
     }
+
+    /* méthodes d'ajout de attributs/methodes pour le parsing */
+    public void addAttribut(Variable attribut) {
+        this.attributs.add(attribut);
+    }
+
+    public void addMethode(Method methode) {
+        this.methodes.add(methode);
+    }
 }

@@ -3,7 +3,6 @@ package test;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -69,91 +68,91 @@ final class ErrorsLexicalSyntacticTest {
 		Compiler.stopAfterSyntax();
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("no error in codeInMain")
 	void noErrorInCodeInMain() {
 		String toParse = codeInFooMain("");
 		Assertions.assertDoesNotThrow(() -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("no error in codeInFooBar")
 	void noErrorInCodeInFooBar() {
 		String toParse = codeInFooBar("");
 		Assertions.assertDoesNotThrow(() -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("invalid C89 Comment")
 	void test301lexicalError1() {
 		String toParse = codeInFooMain("/* So should this /* and this still */ but not this */ // invalid C89 Comment");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("invalid identifier")
 	void test301lexicalError2() {
 		String toParse = codeInFooMain("int 0a; // invalid identifier");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("invalid Decimal Literal (should be Octal!)")
 	void test301lexicalError3() {
 		String toParse = codeInFooMain("int a = 01; // invalid Decimal Literal (should be Octal!)");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("not a Literal")
 	void test301lexicalError4() {
 		String toParse = codeInFooMain("bool b=True; // not a Literal");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("unknown character /")
 	void test301lexicalError5() {
 		String toParse = codeInFooMain("int a = 3 / 4; // unknown character /");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("this is a reserved keyword")
 	void test301lexicalError6() {
 		String toParse = codeInFooMain("int this; // this is a reserved keyword");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("String only in main")
 	void test301lexicalError7() {
 		String toParse = codeInFooBar("String s; // String only in main");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("String[] only in main, (and not usable)")
 	void test301lexicalError8() {
 		String toParse = codeInFooBar("String[] args; // only in main, (and not usable)");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("misleading character .")
 	void test302lexicalError9() {
 		String toParse = codeInFooBar("System.out.println.(42) // misleading character .");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("only 1 statement in main")
 	void test302syntaxError1() {
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(
 				"class Foo {public static void main(String[] args) {System.out.println(42);System.out.println(42);}}"));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("formal parameter error")
 	void test302syntaxError2() {
 		Assertions.assertThrows(CompilerException.class,
@@ -161,28 +160,28 @@ final class ErrorsLexicalSyntacticTest {
 						+ " class Bar {public int Compute(int) {}}"));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("variable declaration error")
 	void test302syntaxError3() {
 		String toParse = codeInFooBar("int ; // variable declaration error");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("only one argument in System.out.println")
 	void test302syntaxError4() {
 		String toParse = codeInFooBar("System.out.println(3, 2);");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("class body error")
 	void test302syntaxError5() {
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(
 				"class Foo {public static void main(String[] args) {System.out.println(42);}} Klass {}"));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("missing return type of method")
 	void test302syntaxError6() {
 		Assertions.assertThrows(CompilerException.class,
@@ -190,7 +189,7 @@ final class ErrorsLexicalSyntacticTest {
 						+ " class Bar {public Foo (int num){ return 1; } // method body error}"));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("erroneous right brace at the end")
 	void test302syntaxError7() {
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(

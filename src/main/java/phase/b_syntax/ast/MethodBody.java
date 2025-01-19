@@ -46,4 +46,13 @@ public record MethodBody(String label, List<AstNode> enfants, AstLocations locat
         return new MethodBody(MethodBody.class.getSimpleName(), new ArrayList<>(), new AstLocations(), new AstList<>(),
                 new AstList<>());
     }
+
+    /* méthodes d'ajout de variables/instructions pour le parsing */
+    public void addVar(Variable attribut) {
+        this.vars.add(attribut);
+    }
+
+    public void addInstruction(Stmt instruction) {
+        this.instructions.add(instruction);
+    }
 }
