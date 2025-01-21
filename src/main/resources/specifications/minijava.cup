@@ -58,9 +58,9 @@ precedence left BIN_OP;
 precedence right NOT;
 
 /* Règles de Productions */
-axiom     ::= klassMain:a
-                {: RESULT = Axiom.create(a, new AstList<>());
-                   RESULT.addPosition(axleft, axright); :}
+axiom     ::= klassMain:a klassList:b
+                {: RESULT = Axiom.create(a, b);
+                   RESULT.addPosition(axleft, bxright); :}
 ;
 klassMain ::= CLASS:a ident:b LBRACE PUBLIC STATIC VOID MAIN
               LPAREN STRING LBRACK RBRACK ident:c RPAREN
