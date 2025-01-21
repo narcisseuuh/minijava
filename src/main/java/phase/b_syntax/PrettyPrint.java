@@ -116,8 +116,10 @@ public final class PrettyPrint extends AstVisitorDefault {
 		out.println();
 		out.print("class ");
 		n.klassId().accept(this);
-		out.print(" extends ");
-		n.parentId().accept(this);
+		if (n.parentId() != null) {
+			out.print(" extends ");
+			n.parentId().accept(this);
+		}
 		space();
 		openBlock();
 		n.vars().accept(this);
