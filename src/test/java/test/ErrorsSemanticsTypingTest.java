@@ -3,7 +3,6 @@ package test;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -55,202 +54,202 @@ final class ErrorsSemanticsTypingTest {
 		Compiler.stopAfterSemantic();
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("no error in codeInFooBar")
 	void noErrorInCodeInBarBar() {
 		Assertions.assertDoesNotThrow(() -> stringCompiler(codeInBarBar("")));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 1")
 	void test401SemanticError1() {
 		String toParse = codeInBarBar("i = op; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 2")
 	void test401SemanticError2() {
 		String toParse = codeInBarBar("b = i; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 3")
 	void test401SemanticError3() {
 		String toParse = codeInBarBar("i = true && false; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 4")
 	void test401SemanticError4() {
 		String toParse = codeInBarBar("i = 6 < 7; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 5")
 	void test401SemanticError5() {
 		String toParse = codeInBarBar("i = !false; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 6")
 	void test401SemanticError6() {
 		String toParse = codeInBarBar("b = 6 + 7; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 7")
 	void test401SemanticError7() {
 		String toParse = codeInBarBar("b = 6 - 7; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 8")
 	void test401SemanticError8() {
 		String toParse = codeInBarBar("b = 6 * 7; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 9")
 	void test401SemanticError9() {
 		String toParse = codeInBarBar("b = true && 7; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 10")
 	void test401SemanticError10() {
 		String toParse = codeInBarBar("b = true < 7; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 11")
 	void test401SemanticError11() {
 		String toParse = codeInBarBar("b = !6; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 12")
 	void test401SemanticError12() {
 		String toParse = codeInBarBar("i = true + 7; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 13")
 	void test401SemanticError13() {
 		String toParse = codeInBarBar("4 = 6 - false; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 14")
 	void test401SemanticError14() {
 		String toParse = codeInBarBar("i = true * false; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 15")
 	void test401SemanticError15() {
 		String toParse = codeInBarBar("op = op2; // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 16")
 	void test401SemanticError16() {
 		String toParse = codeInBarBar("System.out.println(true); // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 17")
 	void test401SemanticError17() {
 		String toParse = codeInBarBar("System.out.println(op); // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 18")
 	void test401SemanticError18() {
 		String toParse = codeInBarBar("System.out.println(op.get()); // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 19")
 	void test401SemanticError19() {
 		String toParse = codeInBarBar("while (i) { } // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 20")
 	void test401SemanticError21() {
 		String toParse = codeInBarBar("while (op) { } // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 21")
 	void test401SemanticError22() {
 		String toParse = codeInBarBar("while (op.compute()) {} // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail type 22")
 	void test401SemanticError23() {
 		String toParse = codeInBarBar("if (i) { } else { } // FAIL : type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("this undef in static method")
 	void test402SemanticError1() {
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(
 				"class Test402{public static void main(String [] a) {System.out.println(this); // this undef in static method\n}}"));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("error in number of arguments 1")
 	void test402SemanticError2() {
 		String toParse = codeInBarBar("i = this.doit(op); // FAIL : number of arguments");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("error in number of arguments 2")
 	void test402SemanticError3() {
 		String toParse = codeInBarBar("i = this.doit(op, 3, 4); // FAIL : number of arguments");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("error argument type 1")
 	void test402SemanticError4() {
 		String toParse = codeInBarBar("i = this.doit(3, 4); // FAIL : arg type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("error argument type 2")
 	void test402SemanticError5() {
 		String toParse = codeInBarBar("i = this.doit(4, op); // FAIL : arg type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("error return type 1")
 	void test402SemanticError6() {
 		String toParse = codeInBarBar("") + "\n"
@@ -258,7 +257,7 @@ final class ErrorsSemanticsTypingTest {
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("error return type 2")
 	void test402SemanticError7() {
 		String toParse = codeInBarBar("") + "\n"

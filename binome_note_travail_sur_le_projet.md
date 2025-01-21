@@ -66,7 +66,7 @@ public static void main(String[] args) {
 
 1. lorsque l'on écrit un visiteur héritant du visiteur par défaut AstVisitorDefault, à quoi sert l'appel à la méthode defaultVisit dans les méthodes redéfinies ?
 
-
+La méthode `defaultVisit` est héritée du visiteur par défaut et va explorer tous les enfants du noeud. Son appel permet donc d'aller visiter tous les noeuds de l'AST.
 
 2. lorsque l'on ajoute un nouveau type de nœud dans l'AST, faut-il modifier le visiteur par défaut AstVisitorDefault ? si oui, pourquoi ?
 
@@ -84,7 +84,7 @@ public static void main(String[] args) {
 
 ### État d'avancement des travaux sur la phase
 
-- [ ] contrôle de type (visiteur TypeChecking) ainsi que les tests (intégrés à la construction du compilateur et qui « passent »).
+- [x] contrôle de type (visiteur TypeChecking) ainsi que les tests (intégrés à la construction du compilateur et qui « passent »).
 - [ ] contrôle de type du Projet MiniJAVA.
 
 ### Commentaires du binôme sur la phase :

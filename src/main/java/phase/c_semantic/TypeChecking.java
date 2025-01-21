@@ -17,6 +17,7 @@ import phase.b_syntax.ast.StmtIf;
 import phase.b_syntax.ast.StmtPrint;
 import phase.b_syntax.ast.StmtWhile;
 import phase.b_syntax.ast.Type;
+import phase.b_syntax.ast.Variable;
 import phase.c_semantic.symtab.InfoKlass;
 import phase.c_semantic.symtab.InfoMethod;
 import phase.c_semantic.symtab.InfoVar;
@@ -353,5 +354,11 @@ public class TypeChecking extends AstVisitorDefault {
 	public void visit(final StmtWhile n) {
 		defaultVisit(n);
 		checkType(BOOL, getType(n.test()), "non boolean as condition of while", n);
+	}
+
+	@Override
+	public void visit(final Variable n) {
+		checkTypeName(n.typeId().name(), n);
+		defaultVisit(n);
 	}
 }
