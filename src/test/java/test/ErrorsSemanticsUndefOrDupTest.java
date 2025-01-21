@@ -55,48 +55,48 @@ final class ErrorsSemanticsUndefOrDupTest {
 		Compiler.stopAfterSemantic();
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("no error in codeInFooBar")
 	void noErrorInCodeInBarBar() {
 		Assertions.assertDoesNotThrow(() -> stringCompiler(codeInBarBar("")));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("duplicate attribute")
 	void test405SemanticError1() {
 		String toParse = codeInBarBar("") + "class Other {int i; boolean i;}";
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("undefined class")
 	void test405SemanticError2() {
 		String toParse = codeInBarBar("") + "class Other {FooBar m;}";
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("no duplication field/formal")
 	void test405SemanticError3() {
 		Assertions.assertDoesNotThrow(() -> stringCompiler(codeInBarBar("")
 				+ "class Other {int k; public int k(){ return k;} // Not a duplication (field/method)\n}"));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("no duplication field/formal")
 	void test405SemanticError4() {
 		Assertions.assertDoesNotThrow(() -> stringCompiler(codeInBarBar("")
 				+ "class Other{public boolean l(int l){int l; // may be duplication with formal\n return l < l;}}"));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("override or duplication ?!?")
 	void test405SemanticError5() {
 		Assertions.assertDoesNotThrow(() -> stringCompiler(codeInBarBar("")
 				+ "class Other{public int over(int x, int y){ return 0; } // Override or Duplication ?!?\n }"));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("duplicated method")
 	void test405SemanticError6() {
 		Assertions.assertDoesNotThrow(
@@ -104,55 +104,55 @@ final class ErrorsSemanticsUndefOrDupTest {
 						+ "class Other {Bar op; public Bar get() {return op;} public int get() {return 0;}// Fail Duplication\n }")));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("undefined variable (type is undef, then type mismatch)")
 	void test405SemanticError7() {
 		String toParse = codeInBarBar("op = oper; // FAIL : \"oper\" undef (+ type)");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("undef method on type (a non-method, then type mismatch")
 	void test405SemanticError8() {
 		String toParse = codeInBarBar("i = i.compute(); // FAIL : undef Class (+...)");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("undef method on type 2")
 	void test405SemanticError9() {
 		String toParse = codeInBarBar("i = op.start(); // FAIL : undef method");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("unknown type, then type mismatch")
 	void test405SemanticError10() {
 		String toParse = codeInBarBar("op = new i(); // FAIL : class undef (+ type)");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("unknown type, then type mismatch 2")
 	void test405SemanticError11() {
 		String toParse = codeInBarBar("op = new op(); // FAIL : class undef (+ type)");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("unknown variable, then undef and type mismatch")
 	void test405SemanticError12() {
 		String toParse = codeInBarBar("i1 = 10; // FAIL : var undef");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("redefinition 1")
 	void test405SemanticError13() {
 		Assertions.assertDoesNotThrow(() -> stringCompiler(codeInBarBar("boolean b; // Redefinition")));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("redefinition 2")
 	void test405SemanticError14() {
 		Assertions.assertDoesNotThrow(() -> stringCompiler(codeInBarBar("boolean i; // Redefinition2")));

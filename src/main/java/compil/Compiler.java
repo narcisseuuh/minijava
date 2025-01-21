@@ -76,7 +76,7 @@ public class Compiler {
      * Demande l'arrêt après l'analyse lexicale.
      */
     public static void stopAfterSyntax() {
-        Compiler.stopAfterStepSyntax = false;
+        Compiler.stopAfterStepSyntax = true;
     }
 
     /**
@@ -122,7 +122,7 @@ public class Compiler {
             Debug.log("=== Phase A Analyse Lexicale et Phase B Syntaxique ===");
             Debug.log("=== new Axiom                                      ===");
             Axiom axiom = new phase.b_syntax.Syntax(this.infile).execute();
-            Compiler.stopAfterSyntax();
+            //Compiler.stopAfterSyntax();
             if (stopAfterStepSyntax) {
                 Debug.toBeContinued();
                 return;
