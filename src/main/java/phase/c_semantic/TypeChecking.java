@@ -3,7 +3,22 @@ package phase.c_semantic;
 import compil.util.Debug;
 import phase.b_syntax.ast.AstNode;
 import phase.b_syntax.ast.AstVisitorDefault;
+import phase.b_syntax.ast.ExprCall;
+import phase.b_syntax.ast.ExprIdent;
+import phase.b_syntax.ast.ExprLiteralBool;
+import phase.b_syntax.ast.ExprLiteralInt;
+import phase.b_syntax.ast.ExprNew;
+import phase.b_syntax.ast.ExprOpBin;
+import phase.b_syntax.ast.ExprOpUn;
+import phase.b_syntax.ast.Method;
+import phase.b_syntax.ast.StmtAssign;
+import phase.b_syntax.ast.StmtBlock;
+import phase.b_syntax.ast.StmtIf;
+import phase.b_syntax.ast.StmtPrint;
+import phase.b_syntax.ast.StmtWhile;
+import phase.b_syntax.ast.Type;
 import phase.c_semantic.symtab.InfoKlass;
+import phase.c_semantic.symtab.InfoMethod;
 import phase.c_semantic.symtab.InfoVar;
 import phase.c_semantic.symtab.Scope;
 
@@ -200,4 +215,143 @@ public class TypeChecking extends AstVisitorDefault {
 	// - Stmt* + Expr* (sauf exceptions) : Compatibilité des Types
 	// - Type : Validité des noms de type dans Variable, Method, Formal
 	// - Method : returnType compatible avec Type(returnExpr)
+
+	// Déclarations
+	@Override
+	public void visit(final Method n) {
+		defaultVisit(n);
+		checkType(n.returnType().name(), getType(n.returnExp()),
+				"Invalid Type for return in method " + n.methodId(), n);
+	}
+
+	@Override
+	public void visit(final Type n) {
+		defaultVisit(n);
+		checkTypeName(n.name(), n);
+	}
+
+	// Expressions
+	@Override
+	public void visit(final ExprLiteralInt n) {
+		setType(n, INT);
+	}
+
+	@Override
+	public void visit(final ExprLiteralBool n) {
+		setType(n, BOOL);
+	}
+
+	@Override
+	public void visit(final ExprCall n) {
+		n.receiver().accept(this);
+		final InfoKlass kl = lookupKlass(getType(n.receiver()));
+		if (kl == null) {
+			erreur(n, "Attempt to call a non-method (unknown class)");
+			setType(n, VOID);
+			return;
+		}
+		n.methodId().accept(this);
+		final InfoMethod m = kl.getScope().lookupMethod(n.methodId().name());
+		/*
+		 * NB : pour gérer la surcharge, il faudrait faire un lookupAllMethods et itérer
+		 * sur la liste des méthodes pour trouver la première méthode qui passe le
+		 * contrôle de type ...
+		 */
+		if (m == null) {
+			erreur(n, "Attempt to call a non-method (unknown method)");
+			setType(n, VOID);
+			return;
+		}
+		if (m.getArgs().length != n.args().nbChildren() + 1) { // attention à this mis en arg0
+			erreur(n, "Call of method " + m + " does not match the number of args");
+			setType(n, VOID);
+			return;
+		}
+		int i = 1;
+		for (AstNode f : n.args()) {
+			f.accept(this);
+			checkType(m.getArgs()[i++].type(), getType(f), "Call of method does not match the signature :" + m, n);
+		}
+		setType(n, m.getReturnType());
+	}
+
+	@Override
+	public void visit(final ExprIdent n) {
+		defaultVisit(n);
+		setType(n, lookupVarType(n, n.varId().name()));
+	}
+
+	@Override
+	public void visit(final ExprNew n) {
+		defaultVisit(n);
+		checkTypeName(n.klassId().name(), n);
+		setType(n, n.klassId().name());
+	}
+
+	@Override
+	public void visit(final ExprOpBin n) {
+		defaultVisit(n);
+		final String msg1 = "Invalid Type for left arg " + n.op();
+		final String msg2 = "Invalid Type for right arg " + n.op();
+		switch (n.op()) {
+		case PLUS, MINUS, TIMES -> {
+                    checkType(INT, getType(n.expr1()), msg1, n);
+                    checkType(INT, getType(n.expr2()), msg2, n);
+                    setType(n, INT);
+                }
+		case AND -> {
+                    checkType(BOOL, getType(n.expr1()), msg1, n);
+                    checkType(BOOL, getType(n.expr2()), msg2, n);
+                    setType(n, BOOL);
+                }
+		case LESS -> {
+                    checkType(INT, getType(n.expr1()), msg1, n);
+                    checkType(INT, getType(n.expr2()), msg2, n);
+                    setType(n, BOOL);
+                }
+		default -> setType(n, VOID);
+		}
+	}
+
+	@Override
+	public void visit(final ExprOpUn n) {
+		defaultVisit(n);
+		final String msg = "Invalid Type for operator " + n.op();
+		if (n.op() == compil.EnumOper.NOT) {
+			checkType(BOOL, getType(n.expr()), msg, n);
+			setType(n, BOOL);
+		} else {
+			setType(n, VOID);
+		}
+	}
+
+	// Instructions
+	@Override
+	public void visit(final StmtPrint n) {
+		defaultVisit(n);
+		checkType(INT, getType(n.expr()), "non integer for printing", n);
+	}
+
+	@Override
+	public void visit(final StmtAssign n) {
+		defaultVisit(n);
+		checkType(lookupVarType(n, n.varId().name()), getType(n.value()), "Type mismatch in assignment", n);
+	}
+
+	@Override
+	public void visit(final StmtBlock n) {
+		defaultVisit(n);
+	}
+
+	@Override
+	public void visit(final StmtIf n) {
+		defaultVisit(n);
+		checkType(BOOL, getType(n.test()), "non boolean as condition of if", n);
+	}
+
+	@Override
+	public void visit(final StmtWhile n) {
+		defaultVisit(n);
+		checkType(BOOL, getType(n.test()), "non boolean as condition of while", n);
+	}
 }

@@ -17,9 +17,9 @@ sans être finalisé, et ce qui pose problème.
 
 ### État d'avancement des travaux sur la phase
 
-- [x] spécifications jflex/cup : terminé/presque terminé/en cours/commencé/non commencé
-- [ ] PrettyPrinter : terminé/presque terminé/en cours/commencé/non commencé
-- [x] analyse lexicale et syntaxique pour les tableaux : terminé/presque terminé/en cours/commencé/non commencé
+- [x] spécifications jflex/cup.
+- [x] PrettyPrinter.
+- [x] analyse lexicale et syntaxique pour les tableaux.
 
 ### Commentaires du binôme sur la phase :
 
@@ -54,6 +54,55 @@ public static void main(String[] args) {
     }
 }
 ```
+
+## Phase 2 : Analyse Sémantique : Table des Symboles
+
+### État d'avancement des travaux sur la phase
+
+- [x] construction de la table des symboles (visiteur BuildSymTab, mais aussi les visiteurs DisplayVarDeclarations, DisplayScopes, et DisplayVarDeclarationsInScopes) ainsi que les tests (intégrés à la construction du compilateur et qui « passent »).
+- [x] construction de la table des symboles du Projet MiniJAVA.
+
+### Commentaires du binôme sur la phase :
+
+1. lorsque l'on écrit un visiteur héritant du visiteur par défaut AstVisitorDefault, à quoi sert l'appel à la méthode defaultVisit dans les méthodes redéfinies ?
+
+
+
+2. lorsque l'on ajoute un nouveau type de nœud dans l'AST, faut-il modifier le visiteur par défaut AstVisitorDefault ? si oui, pourquoi ?
+
+
+
+3. que fait notre compilateur en cas d'erreur dans la gestion de l'héritage (détection d'un cycle) ?
+
+
+
+4. notre compilateur considère-t-il comme une erreur de redéfinition l'écrasement d'un paramètre d'appel par une variable locale ? Qu'en est-il du compilateur javac ?
+
+
+
+## Phase 3 : Analyse Sémantique : Contrôle de Type
+
+### État d'avancement des travaux sur la phase
+
+- [ ] contrôle de type (visiteur TypeChecking) ainsi que les tests (intégrés à la construction du compilateur et qui « passent »).
+- [ ] contrôle de type du Projet MiniJAVA.
+
+### Commentaires du binôme sur la phase :
+
+1. Le compilateur MiniJAVA gère-t-il la surcharge ? Si ce n'est pas le cas, que fait le compilateur ? Pour cette question, cf. aussi la section 2.4 du Mémento MiniJAVA ;
+
+
+
+2. Le compilateur MiniJAVA gère-t-il la redéfinition ? la liaison dynamique ? Si ce n'est pas le cas, que fait le compilateur ? Pour cette question, cf. aussi la section 2.4 du Mémento MiniJAVA ;
+
+
+
+3. Dans le code du visiteur TypeChecking, comment voit-on que le type est un attribut synthétisé ?
+
+
+
+4. Pourquoi la méthode compareType appelée par la méthode checkType est-elle récursive ?
+
 
 
 ## Phase N : Titre de la phase
