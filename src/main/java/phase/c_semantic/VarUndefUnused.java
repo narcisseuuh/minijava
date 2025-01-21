@@ -1,10 +1,8 @@
 package phase.c_semantic;
-
 import java.util.Collection;
 
 import compil.util.Debug;
-import phase.b_syntax.ast.AstNode;
-import phase.b_syntax.ast.AstVisitorDefault;
+import phase.b_syntax.ast.*;
 import phase.c_semantic.symtab.InfoKlass;
 import phase.c_semantic.symtab.InfoVar;
 import phase.c_semantic.symtab.Scope;
@@ -101,5 +99,37 @@ public class VarUndefUnused extends AstVisitorDefault {
 		error = true;
 	}
 
-	// ///////////////// Visit ////////////////////
+	/////////////////// Visit ////////////////////
+    @Override
+    public void visit(final ExprIdent n) {
+        
+        final InfoVar iv = getScope(n).lookupVariable(n.varId().name());
+        if (iv == null)
+            undefError(n, n.varId().name());
+        defaultVisit(n);
+    }
+
+    @Override
+    public void visit(final StmtAssign n) {
+        
+        final InfoVar iv = getScope(n).lookupVariable(n.label());
+        this.unused.remove(iv);
+        defaultVisit(n);
+    }
+
+    @Override
+    public void visit(final StmtArrayAssign n) {
+        
+        final InfoVar iv = getScope(n).lookupVariable(n.arrayId().name());
+        this.unused.remove(iv);
+        defaultVisit(n);
+    }
+
+    @Override
+    public void visit(final ExprCall n) {
+        
+        final InfoVar iv = getScope(n).lookupVariable(n.label());
+        this.unused.remove(iv);
+        defaultVisit(n);
+    }
 }
