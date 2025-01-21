@@ -358,7 +358,7 @@ public class TypeChecking extends AstVisitorDefault {
 
 	@Override
 	public void visit(final Variable n) {
-		checkTypeName(n.typeId().name(), n);
 		defaultVisit(n);
+		setType(n, n.typeId().name());
 	}
 }

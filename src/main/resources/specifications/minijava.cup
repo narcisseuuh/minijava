@@ -109,7 +109,7 @@ variable ::= type:t ident:i SEMI:s
                   RESULT.addPosition(txleft, sxright); :}
 ;
 type ::= ident:i
-               {: RESULT = Type.create(EnumType.UNDEF);
+               {: RESULT = Type.create(i.name());
                   RESULT.addPosition(ixleft, ixright); :}
    | INT:i
                {: RESULT = Type.create(EnumType.INT);
