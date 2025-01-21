@@ -24,7 +24,7 @@ action code {:
 
 /* Lexèmes (Tokens) */
 terminal CLASS, MAIN, OUT, PRINTLN, PUBLIC, STATIC, STRING, SYSTEM, VOID;
-terminal RETURN, INT, BOOL, COL, EQ, IF, ELSE, WHILE, NEW, NOT, EXTENDS;
+terminal RETURN, INT, BOOL, COL, EQ, IF, ELSE, WHILE, NEW, NOT, EXTENDS, LENGTH;
 terminal DOT, SEMI, LBRACE, RBRACE;
 terminal LPAREN, RPAREN;
 terminal LBRACK, RBRACK;
@@ -111,10 +111,15 @@ variable ::= type:t ident:i SEMI:s
 type ::= ident:i
                {: RESULT = Type.create(EnumType.UNDEF);
                   RESULT.addPosition(ixleft, ixright); :}
-   | INT 
-               {: RESULT = Type.create(EnumType.INT); :}
-   | BOOL
-               {: RESULT = Type.create(EnumType.BOOL); :}
+   | INT:i
+               {: RESULT = Type.create(EnumType.INT);
+                  RESULT.addPosition(ixleft, ixright); :}
+   | BOOL:i
+               {: RESULT = Type.create(EnumType.BOOL);
+                  RESULT.addPosition(ixleft, ixright); :}
+   | INT:a LBRACK RBRACK:b
+               {: RESULT = Type.create(EnumType.INT_ARRAY);
+                  RESULT.addPosition(axleft, bxright); :}
 ;
 formalargs ::= /* vide */
                {: RESULT = new AstList<Formal>(); :}
@@ -160,7 +165,10 @@ stmt      ::= SYSTEM:a DOT OUT DOT PRINTLN LPAREN expr:b RPAREN SEMI:z
                    RESULT.addPosition(ixleft, s2xright); :}
    | WHILE:w LPAREN expr:e RPAREN stmt:s
                 {: RESULT = StmtWhile.create(e, s);
-                   RESULT.addPosition(wxleft, sxright); :}
+                   RESULT.addPosition(wxleft, sxright); :} 
+   | ident:id LBRACK expr:e1 RBRACK EQ expr:e2 SEMI:s
+                {: RESULT = StmtArrayAssign.create(id, e1, e2);
+                   RESULT.addPosition(idxleft, sxright); :}
 ;
 expr      ::= LIT_INT:a
                 {: RESULT = ExprLiteralInt.create(a);
@@ -186,4 +194,13 @@ expr      ::= LIT_INT:a
    | NOT:n expr:e 
                 {: RESULT = ExprOpUn.create(EnumOper.NOT, e);
                    RESULT.addPosition(nxleft, exright); :}
+   | expr:e1 LBRACK expr:e2 RBRACK:z
+                {: RESULT = ExprArrayLookup.create(e1, e2);
+                   RESULT.addPosition(e1xleft, zxright); :}
+   | expr:e DOT LENGTH:z
+                {: RESULT = ExprArrayLength.create(e);
+                    RESULT.addPosition(exleft, zxright); :}
+   | NEW INT LBRACK expr:e RBRACK:z
+                {: RESULT = ExprArrayNew.create(e, EnumType.INT);
+                    RESULT.addPosition(exleft, zxright); :}
 ;

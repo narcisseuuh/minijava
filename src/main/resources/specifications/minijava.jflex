@@ -32,6 +32,7 @@ Bin_op     = "&&" | "<" | "+" | "-" | "*"
 "while"   { return TOKEN(WHILE);   }
 "new"     { return TOKEN(NEW);     }
 "extends" { return TOKEN(EXTENDS); }
+"length"  { return TOKEN(LENGTH);  }
 
 //// Operateurs
 {Bin_op}  { return TOKEN(BIN_OP, yytext()); }

@@ -54,7 +54,7 @@ final class ErrorsSemanticsArrayTest {
 		Compiler.stopAfterSemantic();
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("no error in codeInFooBar")
 	void noErrorInCodeInBarBar() {
 		String toParse = codeInBarBar("");
