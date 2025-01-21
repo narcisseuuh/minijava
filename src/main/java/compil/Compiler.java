@@ -76,7 +76,7 @@ public class Compiler {
      * Demande l'arrêt après l'analyse lexicale.
      */
     public static void stopAfterSyntax() {
-        Compiler.stopAfterStepSyntax = true;
+        Compiler.stopAfterStepSyntax = false;
     }
 
     /**
