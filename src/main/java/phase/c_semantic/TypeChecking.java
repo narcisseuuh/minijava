@@ -1,23 +1,7 @@
 package phase.c_semantic;
 
 import compil.util.Debug;
-import phase.b_syntax.ast.AstNode;
-import phase.b_syntax.ast.AstVisitorDefault;
-import phase.b_syntax.ast.ExprCall;
-import phase.b_syntax.ast.ExprIdent;
-import phase.b_syntax.ast.ExprLiteralBool;
-import phase.b_syntax.ast.ExprLiteralInt;
-import phase.b_syntax.ast.ExprNew;
-import phase.b_syntax.ast.ExprOpBin;
-import phase.b_syntax.ast.ExprOpUn;
-import phase.b_syntax.ast.Method;
-import phase.b_syntax.ast.StmtAssign;
-import phase.b_syntax.ast.StmtBlock;
-import phase.b_syntax.ast.StmtIf;
-import phase.b_syntax.ast.StmtPrint;
-import phase.b_syntax.ast.StmtWhile;
-import phase.b_syntax.ast.Type;
-import phase.b_syntax.ast.Variable;
+import phase.b_syntax.ast.*;
 import phase.c_semantic.symtab.InfoKlass;
 import phase.c_semantic.symtab.InfoMethod;
 import phase.c_semantic.symtab.InfoVar;
@@ -360,5 +344,20 @@ public class TypeChecking extends AstVisitorDefault {
 	public void visit(final Variable n) {
 		defaultVisit(n);
 		setType(n, n.typeId().name());
+	}
+
+    @Override
+	public void visit(final ExprArrayLookup n) {
+		defaultVisit(n);
+        checkType(INT_ARRAY, getType(n.array()), "non array as array of array lookup", n);
+		checkType(INT, getType(n.index()), "non entier as index of array lookup", n);
+	}
+
+    @Override
+	public void visit(final StmtArrayAssign n) {
+		defaultVisit(n);
+        checkType(INT_ARRAY, lookupVarType(n, n.arrayId().name()), "non array as array of array assign", n);
+        checkType(INT, getType(n.value()), "non int as expr of array assign expression", n);
+		checkType(INT, getType(n.index()), "non entier as index of array lookup", n);
 	}
 }

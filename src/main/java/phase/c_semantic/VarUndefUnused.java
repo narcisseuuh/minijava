@@ -104,6 +104,7 @@ public class VarUndefUnused extends AstVisitorDefault {
     public void visit(final ExprIdent n) {
         
         final InfoVar iv = getScope(n).lookupVariable(n.varId().name());
+        this.unused.remove(iv);
         if (iv == null)
             undefError(n, n.varId().name());
         defaultVisit(n);
@@ -121,14 +122,6 @@ public class VarUndefUnused extends AstVisitorDefault {
     public void visit(final StmtArrayAssign n) {
         
         final InfoVar iv = getScope(n).lookupVariable(n.arrayId().name());
-        this.unused.remove(iv);
-        defaultVisit(n);
-    }
-
-    @Override
-    public void visit(final ExprCall n) {
-        
-        final InfoVar iv = getScope(n).lookupVariable(n.label());
         this.unused.remove(iv);
         defaultVisit(n);
     }
