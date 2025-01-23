@@ -241,10 +241,31 @@ public class Intermediate extends AstVisitorDefault {
     }
 
     @Override
+    public void visit(final ExprArrayLookup n) {
+        defaultVisit(n);
+        setVar(n, newTemp());
+        add(new QAssignArrayFrom(getVar(n.array()), getVar(n.index()), getVar(n)));
+    }
+
+    @Override
+    public void visit(final ExprArrayLength n) {
+        defaultVisit(n);
+        setVar(n, newTemp());
+        add(new QLength(getVar(n.array()), getVar(n)));
+    }
+
+    @Override
     public void visit(final ExprNew n) {
         defaultVisit(n);
         setVar(n, newTemp());
         add(new QNew(newLabel(n.klassId().name()), getVar(n)));
+    }
+
+    @Override
+    public void visit(final ExprArrayNew n) {
+        defaultVisit(n);
+        setVar(n, newTemp());
+        add(new QNewArray(newLabel(n.type().name()), getVar(n.size()), getVar(n)));
     }
 
     // Instructions
@@ -261,6 +282,12 @@ public class Intermediate extends AstVisitorDefault {
         defaultVisit(n);
         // setVar(n, lookupVar(n.varId().name(), n)); // non nécessaire
         add(new QCopy(getVar(n.value()), lookupVar(n.varId().name(), n)));
+    }
+
+    @Override
+    public void visit(final StmtArrayAssign n) {
+        defaultVisit(n);
+        add(new QAssignArrayTo(getVar(n.value()), getVar(n.index()), lookupVar(n.arrayId().name(), n)));
     }
 
     @Override
