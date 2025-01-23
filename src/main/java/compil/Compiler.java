@@ -36,6 +36,13 @@ public class Compiler {
      */
     private static boolean stopAfterStepSemantic = false;
     /**
+     * Si {@code true}, arrête silencieusement (sans erreurs) après la phase de
+     * la génération de la forme intermédiaire. Utile lors de la construction par phase du compilateur
+     * et pour les test.
+     */
+    private static boolean stopAfterIR = false;
+
+    /**
      * Si {@code true}, arrête silencieusement (sans erreurs) après l'étape de
      * génération du code MIPS. Utile lors de la construction par phase du
      * compilateur et pour les tests de l'analyse sémantique.
@@ -108,6 +115,20 @@ public class Compiler {
     }
 
     /**
+     * Demande l'arrêt après la génération de la représentation intermédiaire..
+     */
+    public static void stopAfterIR() {
+        Compiler.stopAfterIR = true;
+    }
+
+    /**
+     * Demande la continuation après la génération de la représentation intermédiaire.
+     */
+    public static void doNotStopAfterIR() {
+        Compiler.stopAfterIR = false;
+    }
+
+    /**
      * Demande la continuation après la génération du code MIPS.
      */
     public static void doNotStopAfterGeneration() {
@@ -138,6 +159,11 @@ public class Compiler {
             Debug.log("=== Phase D Génération de la Représentation Intermédiaire ===");
             Debug.log("=== new IntermediateRepresentation                        ===");
             IntermediateRepresentation ir = new Intermediate(axiom, semanticTree).execute();
+            Compiler.stopAfterIR();
+            if (stopAfterIR) {
+                Debug.toBeContinued();
+                return;
+            }
             Debug.log("=== Phase E Génération de Code ===");
             new phase.e_codegen.CodeGen(ir, outfile).execute();
             Compiler.stopAfterGeneration();
