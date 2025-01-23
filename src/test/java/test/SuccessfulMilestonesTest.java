@@ -87,7 +87,7 @@ final class SuccessfulMilestonesTest {
         Compiler.doNotStopAfterSemantic();
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("première chaîne de caractères")
     void premierString() {
         Assertions.assertDoesNotThrow(() -> stringCompiler(codeInFooMain("if (true) System.out.println(1); else {}")));
@@ -99,37 +99,37 @@ final class SuccessfulMilestonesTest {
         Assertions.assertDoesNotThrow(() -> stringCompiler(jalons[1 - 1]));
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 2, avec chaîne de caractères")
     void jalonString2() {
         Assertions.assertDoesNotThrow(() -> stringCompiler(jalons[2 - 1]));
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 3, avec chaîne de caractères")
     void jalonString3() {
         Assertions.assertDoesNotThrow(() -> stringCompiler(jalons[3 - 1]));
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 4, avec chaîne de caractères")
     void jalonString4() {
         Assertions.assertDoesNotThrow(() -> stringCompiler(jalons[4 - 1]));
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 5, avec chaîne de caractères")
     void jalonString5() {
         Assertions.assertDoesNotThrow(() -> stringCompiler(jalons[5 - 1]));
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 6, avec chaîne de caractères")
     void jalonString6() {
         Assertions.assertDoesNotThrow(() -> stringCompiler(jalons[6 - 1]));
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 7, avec chaîne de caractères")
     void jalonString7() {
         Assertions.assertDoesNotThrow(() -> stringCompiler(jalons[7 - 1]));
@@ -137,7 +137,7 @@ final class SuccessfulMilestonesTest {
 
     // pas de jalon 8
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 9, avec chaîne de caractères")
     void jalonString9() {
         Assertions.assertDoesNotThrow(() -> stringCompiler(jalons[9 - 2]));
