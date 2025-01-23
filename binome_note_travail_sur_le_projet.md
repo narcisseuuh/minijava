@@ -85,7 +85,7 @@ La méthode `defaultVisit` est héritée du visiteur par défaut et va explorer 
 ### État d'avancement des travaux sur la phase
 
 - [x] contrôle de type (visiteur TypeChecking) ainsi que les tests (intégrés à la construction du compilateur et qui « passent »).
-- [ ] contrôle de type du Projet MiniJAVA.
+- [x] contrôle de type du Projet MiniJAVA.
 
 ### Commentaires du binôme sur la phase :
 
@@ -102,6 +102,32 @@ La méthode `defaultVisit` est héritée du visiteur par défaut et va explorer 
 
 
 4. Pourquoi la méthode compareType appelée par la méthode checkType est-elle récursive ?
+
+
+
+## Phase 4 : Génération de la forme intermédiaire 
+
+### Etat d'avancement des travaux sur la phase
+
+- [x] génération de la forme intermédiaire (visiteur Intermediate).
+- [x] génération de la forme intermédiaire du Projet MiniJAVA, c'est-à-dire pour avoir aussi des tableaux. 
+
+### Commentaires du binôme sur la phase :
+
+
+1. pour traduire les nœuds de l'AST de type ExprNew, que fait-on de l'appel au constructeur ?
+
+
+
+2. quel est le rôle de l'attribut currentMethod ? comment est-il manipulé ?
+
+
+
+3. que fait-on du problème du dangling else ? comment le traduit-on ?
+
+
+
+4. quel usage fait-on des étiquettes/labels ? pour quels types de nœud de l'AST sont-elles utilisées et pourquoi ? (on tiendra compte des bonus si on les a fait)
 
 
 
