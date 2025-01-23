@@ -4,6 +4,9 @@ import phase.d_intermediate.IntermediateRepresentation;
 import phase.d_intermediate.ir.IRQuadruple;
 import phase.d_intermediate.ir.IRVariable;
 import phase.d_intermediate.ir.IRvisitorDefault;
+import phase.d_intermediate.ir.QCallStatic;
+import phase.d_intermediate.ir.QLabel;
+import phase.d_intermediate.ir.QParam;
 import phase.e_codegen.access.Access;
 
 /**
@@ -203,4 +206,45 @@ public class ToMips extends IRvisitorDefault {
     }
 
     // ////////////// VISIT ///////////////
+    @Override
+    public void visit(final QLabel q) {
+        mw.label(q.arg1().name());
+    }
+
+    @Override
+    public void visit(final QParam q) {
+        this.params.add(q.arg1());
+    }
+
+    @Override
+    public void visit(final QCallStatic q) {
+        final String function = q.arg1().name();
+        final int nbArg = q.arg2().value();
+        if (nbArg != this.params.size()) {
+            throw new compil.util.CompilerException("ToMips : Params error");
+        }
+        if (nbArg > NBARGS) {
+            throw new compil.util.CompilerException("ToMips : too many args " + function);
+        }
+        switch (function) {
+        case "_exit":
+            push(MIPSRegister.A0);
+            regLoad(MIPSRegister.A0, this.params.get(0));
+            mw.jumpIn("_system_exit");
+            pull(MIPSRegister.A0);
+            break;
+        case "_println":
+            push(MIPSRegister.A0);
+            regLoad(MIPSRegister.A0, this.params.get(0));
+            mw.jumpIn("_system_out_println");
+            pull(MIPSRegister.A0);
+            break;
+        case "main":
+            throw new compil.util.CompilerException("ToMips : recurse main forbidden");
+        default:
+            throw new compil.util.CompilerException("ToMips : wrong special " + function);
+        }
+        this.params.clear();
+    }
 }
+
