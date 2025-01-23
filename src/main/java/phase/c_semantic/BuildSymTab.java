@@ -196,6 +196,7 @@ public class BuildSymTab extends AstVisitorDefault {
 
     @Override
     public void visit(final Klass n) {
+        checkRedef(currentScope.lookupKlass(n.klassId().name()));
         setKlass(n, currentKlass);
         setScope(n, currentScope);
         currentKlass = new InfoKlass(n.klassId().name(), n.parentId().name());

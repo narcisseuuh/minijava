@@ -55,41 +55,41 @@ final class ErrorsSemanticsInheritanceTest {
 		Compiler.stopAfterSemantic();
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("no error in codeInFooBar")
 	void noErrorInCodeInBarBar() {
 		Assertions.assertDoesNotThrow(() -> stringCompiler(codeInBarBar("")));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("class loop 1")
 	void test403SemanticError1() {
 		String toParse = codeInBarBar("") + "class G extends H { } class H extends G { } // Fail Class Loop";
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("class loop 2")
 	void test403SemanticError2() {
 		String toParse = codeInBarBar("") + "class F extends F { } // Fail Class Loop";
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail class undef")
 	void test403SemanticError3() {
 		String toParse = codeInBarBar("") + "class E extends Unk { } // Fail Class Undef";
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail duplicate class 1")
 	void test403SemanticError4() {
 		String toParse = codeInBarBar("") + "class D {} class D {}      // Fail Duplicated class";
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("fail duplicate class 2")
 	void test403SemanticError5() {
 		String toParse = codeInBarBar("")
@@ -97,42 +97,42 @@ final class ErrorsSemanticsInheritanceTest {
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("class type mismatch 1")
 	void test403SemanticError6() {
 		String toParse = codeInBarBar("c = a; // FAIL Type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("class type mismatch 2")
 	void test403SemanticError7() {
 		String toParse = codeInBarBar("c = b; // FAIL Type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("class type mismatch 3")
 	void test403SemanticError8() {
 		String toParse = codeInBarBar("c = new Bar();");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("class type mismatch 4")
 	void test403SemanticError9() {
 		String toParse = codeInBarBar("a = new D(); // FAIL Type") + "class D extends Object { int x; int y; }";
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("class type mismatch 5")
 	void test403SemanticError10() {
 		String toParse = codeInBarBar("b = this; // FAIL Type");
 		Assertions.assertThrows(CompilerException.class, () -> stringCompiler(toParse));
 	}
 
-	@Test@Disabled
+	@Test
 	@DisplayName("class type mismatch 6")
 	void test403SemanticError11() {
 		String toParse = codeInBarBar("c = this; // FAIL Type");
