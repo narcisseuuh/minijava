@@ -1,16 +1,10 @@
 package phase.d_intermediate;
 
 import compil.util.Debug;
-import phase.b_syntax.ast.AstNode;
-import phase.b_syntax.ast.AstVisitorDefault;
-import phase.b_syntax.ast.Axiom;
+import phase.b_syntax.ast.*;
 import phase.c_semantic.SemanticAttribute;
 import phase.c_semantic.SemanticTree;
-import phase.d_intermediate.ir.IRConst;
-import phase.d_intermediate.ir.IRLabel;
-import phase.d_intermediate.ir.IRQuadruple;
-import phase.d_intermediate.ir.IRTempVar;
-import phase.d_intermediate.ir.IRVariable;
+import phase.d_intermediate.ir.*;
 
 /**
  * Génération de la forme intermédiaire (Code à 3 adresses).
@@ -183,4 +177,119 @@ public class Intermediate extends AstVisitorDefault {
     }
 
     /////////////////// Visit ////////////////////
+    @Override
+    public void visit(final KlassMain n) {
+        final String mainMeth = "main";
+        add(new QLabel(newLabel(mainMeth)));
+        String saved = this.currentMethod;
+        this.currentMethod = mainMeth;
+        defaultVisit(n);
+        this.currentMethod = saved;
+        add(new QParam(newConst(0)));
+        add(new QCallStatic(newLabel("_exit"), newConst(1)));
+    }
+
+    @Override
+    public void visit(final Method n) {
+        add(new QLabelMeth(newLabel(n.methodId().name()), newConst(1 + n.fargs().nbChildren())));
+        String saved = this.currentMethod;
+        this.currentMethod = n.methodId().name();
+        defaultVisit(n);
+        this.currentMethod = saved; //
+        add(new QReturn(getVar(n.returnExp())));
+    }
+
+    // Expressions
+    @Override
+    public void visit(final ExprOpBin n) {
+        defaultVisit(n);
+        setVar(n, newTemp());
+        add(new QAssign(n.op(), getVar(n.expr1()), getVar(n.expr2()), getVar(n)));
+    }
+
+    @Override
+    public void visit(final ExprOpUn n) {
+        defaultVisit(n);
+        setVar(n, newTemp());
+        add(new QAssignUnary(n.op(), getVar(n.expr()), getVar(n)));
+    }
+
+    @Override
+    public void visit(final ExprLiteralInt n) {
+        setVar(n, newConst(n.value()));
+    }
+
+    @Override
+    public void visit(final ExprLiteralBool n) {
+        setVar(n, newConst(Boolean.TRUE.equals(n.value()) ? 1 : 0));
+    }
+
+    @Override
+    public void visit(final ExprCall n) {
+        defaultVisit(n);
+        add(new QParam(getVar(n.receiver()))); // this
+        for (AstNode f : n.args()) {
+            add(new QParam(getVar(f)));
+        }
+        setVar(n, newTemp());
+        add(new QCall(newLabel(n.methodId().name()), newConst(n.args().nbChildren() + 1), getVar(n)));
+    }
+
+    @Override
+    public void visit(final ExprIdent n) {
+        setVar(n, lookupVar(n.varId().name(), n));
+    }
+
+    @Override
+    public void visit(final ExprNew n) {
+        defaultVisit(n);
+        setVar(n, newTemp());
+        add(new QNew(newLabel(n.klassId().name()), getVar(n)));
+    }
+
+    // Instructions
+    
+    @Override
+    public void visit(final StmtPrint n) {
+        defaultVisit(n);
+        add(new QParam(getVar(n.expr())));
+        add(new QCallStatic(newLabel("_println"), newConst(1)));
+    }
+
+    @Override
+    public void visit(final StmtAssign n) {
+        defaultVisit(n);
+        // setVar(n, lookupVar(n.varId().name(), n)); // non nécessaire
+        add(new QCopy(getVar(n.value()), lookupVar(n.varId().name(), n)));
+    }
+
+    @Override
+    public void visit(final StmtBlock n) {
+        defaultVisit(n);
+    }
+
+    @Override
+    public void visit(final StmtIf n) {
+        final IRLabel l1 = newLabel();
+        final IRLabel l2 = newLabel();
+        n.test().accept(this);
+        add(new QJumpCond(l1, getVar(n.test())));
+        n.ifTrue().accept(this);
+        add(new QJump(l2));
+        add(new QLabel(l1));
+        n.ifFalse().accept(this);
+        add(new QLabel(l2));
+    }
+
+    @Override
+    public void visit(final StmtWhile n) {
+        final IRLabel l1 = newLabel();
+        final IRLabel l2 = newLabel();
+        add(new QLabel(l1));
+        n.test().accept(this);
+        add(new QJumpCond(l2, getVar(n.test())));
+        n.body().accept(this);
+        add(new QJump(l1));
+        add(new QLabel(l2));
+    }
 }

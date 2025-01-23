@@ -130,7 +130,7 @@ public class Compiler {
             Debug.log("=== Phase C Analyse Sémantique ===");
             Debug.log("=== new SemanticTree           ===");
             SemanticTree semanticTree = new Semantic(axiom).execute();
-            Compiler.stopAfterSemantic();
+            //Compiler.stopAfterSemantic();
             if (stopAfterStepSemantic) {
                 Debug.toBeContinued();
                 return;
