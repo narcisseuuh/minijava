@@ -1,5 +1,7 @@
 package phase.d_intermediate;
 
+import javax.management.relation.InvalidRoleValueException;
+
 import compil.util.Debug;
 import phase.b_syntax.ast.*;
 import phase.c_semantic.SemanticAttribute;
@@ -203,8 +205,42 @@ public class Intermediate extends AstVisitorDefault {
     @Override
     public void visit(final ExprOpBin n) {
         defaultVisit(n);
-        setVar(n, newTemp());
-        add(new QAssign(n.op(), getVar(n.expr1()), getVar(n.expr2()), getVar(n)));
+        IRVariable exp1 = getVar(n.expr1());
+        IRVariable exp2 = getVar(n.expr2());
+
+        if (exp1 instanceof IRConst a && exp2 instanceof IRConst b)
+        {
+            Integer val1 = a.value();
+            Integer val2 = b.value();
+            Integer nv = 0;
+            switch (n.op()) {
+                case PLUS:
+                    nv = val1 + val2;
+                    break;
+                case MINUS:
+                    nv = val1 - val2;
+                    break;
+                case TIMES:
+                    nv = val1 * val2;
+                    break;
+                case AND:
+                    nv = val1 & val2;
+                    break;
+                case LESS:
+                    nv = (val1 < val2) ? 1 : 0;
+                    break;
+                default:
+                    error = true;
+                    break;
+            }
+            setVar(n, newConst(nv));
+        }
+
+        else
+        {
+            setVar(n, newTemp());
+            add(new QAssign(n.op(), getVar(n.expr1()), getVar(n.expr2()), getVar(n)));
+        }
     }
 
     @Override

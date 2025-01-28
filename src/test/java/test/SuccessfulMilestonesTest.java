@@ -150,42 +150,42 @@ final class SuccessfulMilestonesTest {
                 () -> new Compiler("Jalons/Test101.txt", "src/test/resources/Jalons/Test101.mips").execute());
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 2, fichier Jalons/Test102.txt")
     void jalonFile2() {
         Assertions.assertDoesNotThrow(
                 () -> new Compiler("Jalons/Test102.txt", "src/test/resources/Jalons/Test102.mips").execute());
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 3, fichier Jalons/Test103.txt")
     void jalonFile3() {
         Assertions.assertDoesNotThrow(
                 () -> new Compiler("Jalons/Test103.txt", "src/test/resources/Jalons/Test103.mips").execute());
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 4, fichier Jalons/Test104.txt")
     void jalonFile4() {
         Assertions.assertDoesNotThrow(
                 () -> new Compiler("Jalons/Test104.txt", "src/test/resources/Jalons/Test104.mips").execute());
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 5, fichier Jalons/Test105.txt")
     void jalonFile5() {
         Assertions.assertDoesNotThrow(
                 () -> new Compiler("Jalons/Test105.txt", "src/test/resources/Jalons/Test105.mips").execute());
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 6, fichier Jalons/Test106.txt")
     void jalonFile6() {
         Assertions.assertDoesNotThrow(
                 () -> new Compiler("Jalons/Test106.txt", "src/test/resources/Jalons/Test106.mips").execute());
     }
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 7, fichier Jalons/Test107.txt")
     void jalonFile7() {
         Assertions.assertDoesNotThrow(
@@ -194,7 +194,7 @@ final class SuccessfulMilestonesTest {
 
     // pas de jalon 8
 
-    @Test@Disabled
+    @Test
     @DisplayName("jalon 9, fichier Jalons/Test109.txt")
     void jalonFile9() {
         Assertions.assertDoesNotThrow(

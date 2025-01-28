@@ -320,6 +320,7 @@ public class TypeChecking extends AstVisitorDefault {
 	@Override
 	public void visit(final StmtAssign n) {
 		defaultVisit(n);
+        System.out.println(n.toPrint());
 		checkType(lookupVarType(n, n.varId().name()), getType(n.value()), "Type mismatch in assignment", n);
 	}
 
@@ -351,6 +352,21 @@ public class TypeChecking extends AstVisitorDefault {
 		defaultVisit(n);
         checkType(INT_ARRAY, getType(n.array()), "non array as array of array lookup", n);
 		checkType(INT, getType(n.index()), "non entier as index of array lookup", n);
+        setType(n, INT); // TODO: make this more generic
+	}
+
+    @Override
+	public void visit(final ExprArrayNew n) {
+		defaultVisit(n);
+        checkType(INT, getType(n.size()), "non entier as array length in new array", n);
+        setType(n, INT_ARRAY);
+	}
+
+    @Override
+	public void visit(final ExprArrayLength n) {
+		defaultVisit(n);
+        checkType(INT_ARRAY, getType(n.array()), "length only applies to arrays", n);
+        setType(n, INT);
 	}
 
     @Override

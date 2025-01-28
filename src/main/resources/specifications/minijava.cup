@@ -56,6 +56,10 @@ nonterminal AstList<Expr>   multiargs;
 /* Associativités et Priorités */
 precedence left BIN_OP;
 precedence right NOT;
+precedence left LBRACK;
+precedence left RBRACK;
+
+
 
 /* Règles de Productions */
 axiom     ::= klassMain:a klassList:b
