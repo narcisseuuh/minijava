@@ -1,13 +1,9 @@
 package phase.e_codegen;
 
 import phase.d_intermediate.IntermediateRepresentation;
-import phase.d_intermediate.ir.IRQuadruple;
-import phase.d_intermediate.ir.IRVariable;
-import phase.d_intermediate.ir.IRvisitorDefault;
-import phase.d_intermediate.ir.QCallStatic;
-import phase.d_intermediate.ir.QLabel;
-import phase.d_intermediate.ir.QParam;
+import phase.d_intermediate.ir.*;
 import phase.e_codegen.access.Access;
+import phase.e_codegen.access.AccessReg;
 
 /**
  * La traduction de la forme intermédiaire vers MIPS.
@@ -215,7 +211,7 @@ public class ToMips extends IRvisitorDefault {
     public void visit(final QParam q) {
         this.params.add(q.arg1());
     }
-
+    
     @Override
     public void visit(final QCallStatic q) {
         final String function = q.arg1().name();
@@ -244,6 +240,219 @@ public class ToMips extends IRvisitorDefault {
         default:
             throw new compil.util.CompilerException("ToMips : wrong special " + function);
         }
+        this.params.clear();
+    }
+
+        @Override
+    public void visit(final QJump q) {
+        mw.jump(q.arg1().name());
+    }
+
+    @Override
+    public void visit(final QJumpCond q) {
+        regLoad(MIPSRegister.V0, q.arg2());
+        mw.jumpIfNot(MIPSRegister.V0, q.arg1().name());
+    }
+
+    @Override
+    public void visit(final QCopy q) {
+        // optimisation 1
+        if (this.allocator.access(q.arg1()) instanceof AccessReg regArg1) {
+            regStore(regArg1.getRegister(), q.result());
+            return;
+        }
+        // optimisation 2
+        if (this.allocator.access(q.result()) instanceof AccessReg regResult) {
+            regLoad(regResult.getRegister(), q.arg1());
+            return;
+        }
+        // cas général
+        regLoad(MIPSRegister.V0, q.arg1());
+        regStore(MIPSRegister.V0, q.result());
+    }
+
+    @Override
+    public void visit(final QNew q) {
+        final String klassName = q.arg1().name();
+        final Integer size = this.allocator.classSize(klassName);
+        if (size == null) {
+            throw new compil.util.CompilerException("ToMips.QNew : unknown size for class " + klassName);
+        }
+        if (size < 0) {
+            throw new compil.util.CompilerException("ToMips.QNew : negative size malloc for class " + klassName);
+        }
+        push(MIPSRegister.A0);
+        mw.load(MIPSRegister.A0, size);
+        mw.jumpIn("_new_object");
+        regStore(MIPSRegister.V0, q.result());
+        pull(MIPSRegister.A0);
+    }
+
+    @Override
+    public void visit(final QAssign q) {
+        regLoad(MIPSRegister.V0, q.arg1());
+        regLoad(MIPSRegister.V1, q.arg2());
+        switch (q.op()) {
+        case PLUS -> mw.plus(MIPSRegister.V0, MIPSRegister.V1);
+        case MINUS -> mw.moins(MIPSRegister.V0, MIPSRegister.V1);
+        case TIMES -> mw.fois(MIPSRegister.V0, MIPSRegister.V1);
+        case AND -> mw.et(MIPSRegister.V0, MIPSRegister.V1);
+        case LESS -> mw.inferieur(MIPSRegister.V0, MIPSRegister.V1);
+        default -> throw new compil.util.CompilerException("Invalid binary Operator " + q.op());
+        }
+        regStore(MIPSRegister.V0, q.result());
+    }
+
+    @Override
+    public void visit(final QNewArray q) {
+        push(MIPSRegister.A0);
+        regLoad(MIPSRegister.A0, q.arg2());
+
+        // compute size
+        mw.plus(MIPSRegister.A0, 1);
+        mw.fois4(MIPSRegister.A0);
+
+        mw.jumpIn("_new object");
+        regLoad(MIPSRegister.A0, q.arg2());
+
+        mw.storeOffset(MIPSRegister.A0, 0, MIPSRegister.V0);
+        regStore(MIPSRegister.V0, q.result());
+
+        pull(MIPSRegister.A0);
+    }
+
+    @Override
+    public void visit(final QAssignArrayFrom q) {
+        regLoad(MIPSRegister.V0, q.arg1());
+        regLoad(MIPSRegister.V1, q.arg2());
+
+        // calcul de l'adresse
+        mw.fois4(MIPSRegister.V0);
+        mw.plus(MIPSRegister.V0, MIPSRegister.V1);
+
+        // load offset, using 4 as a constant offset
+        // instead of adding it to save an instruction
+        mw.loadOffset(MIPSRegister.V0, 4, MIPSRegister.V0);
+
+        regStore(MIPSRegister.V0, q.result());
+    }
+
+    @Override
+    public void visit(final QAssignArrayTo q) {
+        regLoad(MIPSRegister.V0, q.arg2());
+        regLoad(MIPSRegister.V1, q.result());
+
+        // calcul de l'adresse
+        mw.fois4(MIPSRegister.V0);
+        mw.plus(MIPSRegister.V0, MIPSRegister.V1);
+
+        // load offset, using 4 as a constant offset
+        // instead of adding it to save an instruction
+        regLoad(MIPSRegister.V0, q.arg1());
+        mw.storeOffset(MIPSRegister.V1, 4, MIPSRegister.V0);
+    }
+
+    @Override
+    public void visit(final QLength q) {
+        regLoad(MIPSRegister.V0, q.arg1());
+        mw.loadOffset(MIPSRegister.V0, 0, MIPSRegister.V0);
+
+        regStore(MIPSRegister.V0, q.result());
+    }
+
+    @Override
+    public void visit(final QAssignUnary q) {
+        regLoad(MIPSRegister.V0, q.arg1());
+        if (q.op() == compil.EnumOper.NOT) {
+            mw.not(MIPSRegister.V0);
+        } else {
+            throw new compil.util.CompilerException("Invalid unary Operator " + q.op());
+        }
+        regStore(MIPSRegister.V0, q.result());
+    }
+
+    @Override
+    public void visit(final QLabelMeth q) {
+        final String function = q.arg1().name();
+        mw.label(function);
+        mw.com("--création de la trame dans l'appelé");
+        mw.com("positionne la trame $fp (et sauvegarde $sp)");
+        mw.move(MIPSRegister.FP, MIPSRegister.SP); // positionne la trame $fp (et sauvegarde $sp)
+        mw.com("alloue la trame : " + MIPSRegister.SP + ", " + -allocator.frameSize(function));
+        mw.plus(MIPSRegister.SP, -allocator.frameSize(function)); // alloue la trame
+        calleeSave();
+        // A1, A2, A3 recopiés comme variables locales
+        final int local0 = -allocator.frameSizeMin() - SIZEOF;
+        mw.com("recopie de A1, A2, A3 comme variables locales : " + local0);
+        final int nbArg = q.arg2().value();
+        if (nbArg > 1) {
+            mw.storeOffset(MIPSRegister.A1, local0, MIPSRegister.FP);
+        }
+        if (nbArg > 2) {
+            mw.storeOffset(MIPSRegister.A2, local0 - SIZEOF, MIPSRegister.FP);
+        }
+        if (nbArg > 3) {
+            mw.storeOffset(MIPSRegister.A3, local0 - 2 * SIZEOF, MIPSRegister.FP);
+        }
+        // NB : l'execution des 3 copies sans tester le nombre d'arguments
+        // donne aussi un code correct
+        // Initialisation des variables locales
+        // on devrait le faire ici mais on a oublié !!!
+        mw.com("--fin de la création de la trame dans l'appelé");
+        mw.com("--code de l'appelé " + q.arg1());
+    }
+
+    @Override
+    public void visit(final QReturn q) {
+        calleeRestore();
+        regLoad(MIPSRegister.V0, q.arg1());
+        mw.com("--déallocation de la trame en restaurant SP à partir de FP");
+        mw.move(MIPSRegister.SP, MIPSRegister.FP);
+        mw.com("--retour à l'appelant en utilisant RA qui vient d'être récupéré");
+        mw.jumpOut();
+    }
+
+    @Override
+    public void visit(final QCall q) {
+        final String function = q.arg1().name();
+        final int nbArg = q.arg2().value();
+        // check nombre d'arguments
+        if (nbArg != this.params.size()) {
+            throw new compil.util.CompilerException("ToMips : Params error");
+        }
+        // Sauvegarde registres non préservés par un appel de fonction
+        callerSave();
+        // Passage des Arguments dans $A0-$A3 puis dans la pile
+        // N.B. : Danger d'écrasement sur les registres $A_i :
+        // si les valeurs des arguments de l'appelé dépendent
+        // des arguments de l'appelant, il ne faut pas prendre
+        // ces valeurs dans les registres $A_i mais dans la sauvegarde des $A_i
+        // que l'on vient de faire sur la pile !
+        // Exemple : rec.f(tutu,titi) avec tutu = champs d'objet
+        // this = $A0
+        // tutu == this.tutu == Offset_tutu ( $A0 )
+        // si on affecte d'abord $A0 (this=rec), on a perdu (rec.tutu??) !!!
+        // Seul $A0 reste alloué dans un registre
+        // les parametres $A1, $A2, $A3 sont obligatoirement
+        // recopiées dans des variables locales allouées dans la frame.
+        // => Seule contrainte contre l'écrasement :
+        // l'argument A0 est chargé (et écrasé) le dernier.
+        // arguments 1, 2 ,3 dans A1, A2, A3
+        mw.com("--arguments 1, 2, 3 dans A1, A2, A3");
+        for (int i = 1; i < NBARGS && i < nbArg; i++) {
+            regLoad(AREGS[i], this.params.get(i));
+        }
+        // argument 0 == this, obligatoirement le dernier, dans $A0
+        mw.com("--argument 0 == this, obligatoirement le dernier, dans $A0");
+        regLoad(MIPSRegister.A0, this.params.get(0));
+        // Jump
+        mw.com("--saut dans la fonction " + function);
+        mw.jumpIn(function);
+        // restauration registre
+        callerRestore();
+        // resultat dans V0
+        regStore(MIPSRegister.V0, q.result());
+        // clear des QParams
         this.params.clear();
     }
 }

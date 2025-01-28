@@ -208,6 +208,7 @@ public class Intermediate extends AstVisitorDefault {
         IRVariable exp1 = getVar(n.expr1());
         IRVariable exp2 = getVar(n.expr2());
 
+        // constant propagation bonus
         if (exp1 instanceof IRConst a && exp2 instanceof IRConst b)
         {
             Integer val1 = a.value();

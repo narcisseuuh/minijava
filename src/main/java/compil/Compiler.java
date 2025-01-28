@@ -159,14 +159,18 @@ public class Compiler {
             Debug.log("=== Phase D Génération de la Représentation Intermédiaire ===");
             Debug.log("=== new IntermediateRepresentation                        ===");
             IntermediateRepresentation ir = new Intermediate(axiom, semanticTree).execute();
-            Compiler.stopAfterIR();
+            
+            //Compiler.stopAfterIR();
+            
             if (stopAfterIR) {
                 Debug.toBeContinued();
                 return;
             }
             Debug.log("=== Phase E Génération de Code ===");
             new phase.e_codegen.CodeGen(ir, outfile).execute();
-            Compiler.stopAfterGeneration();
+            
+            //Compiler.stopAfterGeneration();
+
             if (stopAfterStepGeneration) {
                 Debug.toBeContinued();
                 return;
