@@ -313,7 +313,7 @@ public class ToMips extends IRvisitorDefault {
         mw.fois4(MIPSRegister.A0);
 
         mw.jumpIn("_new_object");
-        //regLoad(MIPSRegister.A0, q.arg2());
+        regLoad(MIPSRegister.A0, q.arg2()); // useless ?? is the poly wrong ?
 
         mw.storeOffset(MIPSRegister.A0, 0, MIPSRegister.V0);
         regStore(MIPSRegister.A0, q.result());
