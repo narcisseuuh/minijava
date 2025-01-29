@@ -1,5 +1,8 @@
 package compil;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 import compil.util.CompilerException;
 import compil.util.Debug;
 import phase.b_syntax.ast.Axiom;
@@ -177,9 +180,19 @@ public class Compiler {
             }
             if (RUNMARS) { // peut-être pas ici !
                 Debug.log("=== Exécution Mars de " + outfile + " ===");
-                final int returnedValue = new ProcessBuilder("java", "-jar", "lib/mars.jar", "nc", outfile)
-                        .inheritIO().start().waitFor();
-                System.out.println(returnedValue);
+                final Process proc = new ProcessBuilder("java", "-jar", "lib/mars.jar", "nc", outfile)
+                    .start();
+                
+                // Augustin/Maël : fix no mars output using inheritIO which dosnt seem to work
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println(line);
+                    }
+                }
+
+                final int returnedValue = proc.waitFor();
+                Debug.log("=== Fin d'exécution Mars ===");    
                 if (returnedValue != 0) {
                     throw new CompilerException(
                             "Error when executing MIPS program: exit status of MARS is " + returnedValue);

@@ -3,29 +3,11 @@ import phase.b_syntax.ast.*; // définition de l'AST
 import compil.EnumOper; // import EnumOper
 import compil.EnumType;
 
-action code {:
-   public EnumOper stringToEnumOper(String str) {
-      switch (str) {
-         case "+":
-            return EnumOper.PLUS;
-         case "-":
-            return EnumOper.MINUS;
-         case "*":
-            return EnumOper.TIMES;
-         case "&&":
-            return EnumOper.AND;
-         case "<":
-            return EnumOper.LESS;
-         default:
-            return EnumOper.UNDEF;
-      }
-   }
-:};
-
 /* Lexèmes (Tokens) */
 terminal CLASS, MAIN, OUT, PRINTLN, PUBLIC, STATIC, STRING, SYSTEM, VOID;
-terminal RETURN, INT, BOOL, COL, EQ, IF, ELSE, WHILE, NEW, NOT, EXTENDS, LENGTH;
+terminal RETURN, INT, BOOL, COL, IF, ELSE, WHILE, NEW, EXTENDS, LENGTH;
 terminal DOT, SEMI, LBRACE, RBRACE;
+terminal AND, ASSIGN, LESS, MINUS, PLUS, NOT, TIMES;
 terminal LPAREN, RPAREN;
 terminal LBRACK, RBRACK;
 
@@ -33,7 +15,6 @@ terminal LBRACK, RBRACK;
 terminal Integer LIT_INT;
 terminal String  IDENT;
 terminal Boolean LIT_BOOL;
-terminal String  BIN_OP;
 
 /* Variables de la grammaire et Arbre de syntaxe */
 nonterminal Axiom           axiom;
@@ -54,12 +35,14 @@ nonterminal AstList<Expr>   args;
 nonterminal AstList<Expr>   multiargs;
 
 /* Associativités et Priorités */
-precedence left BIN_OP;
-precedence right NOT;
-precedence left LBRACK;
-precedence left RBRACK;
-
-
+precedence right ASSIGN;           
+precedence left AND;             
+precedence left LESS;      
+precedence left PLUS, MINUS; 
+precedence left TIMES;      
+precedence right NOT;     
+precedence left LBRACK;     
+precedence left RBRACK;    
 
 /* Règles de Productions */
 axiom     ::= klassMain:a klassList:b
@@ -101,12 +84,12 @@ method ::= PUBLIC:p type:t ident:i LPAREN formalargs:a RPAREN LBRACE
 ;
 methodBody ::= /* vide */
                {: RESULT = MethodBody.create(); :}
-   | variable:v methodBody:m
+   | methodBody:m variable:v
                {: RESULT = m; RESULT.addVar(v);
-                  RESULT.addPosition(vxleft, mxright); :}
-   | stmt:s methodBody:m
+                  RESULT.addPosition(mxleft, vxright); :}
+   | methodBody:m stmt:s
                {: RESULT = m; RESULT.addInstruction(s);
-                  RESULT.addPosition(sxleft, mxright); :}
+                  RESULT.addPosition(mxleft, sxright); :}
 ;
 variable ::= type:t ident:i SEMI:s
                {: RESULT = Variable.create(t, i);
@@ -158,7 +141,7 @@ ident     ::= IDENT:a
 stmt      ::= SYSTEM:a DOT OUT DOT PRINTLN LPAREN expr:b RPAREN SEMI:z
                 {: RESULT = StmtPrint.create(b);
                    RESULT.addPosition(axleft, zxright); :}
-   | ident:i EQ expr:e SEMI:s
+   | ident:i ASSIGN expr:e SEMI:s
                 {: RESULT = StmtAssign.create(i, e);
                    RESULT.addPosition(ixleft, sxright); :}
    | LBRACE:l methodBody:m RBRACE:r
@@ -170,7 +153,7 @@ stmt      ::= SYSTEM:a DOT OUT DOT PRINTLN LPAREN expr:b RPAREN SEMI:z
    | WHILE:w LPAREN expr:e RPAREN stmt:s
                 {: RESULT = StmtWhile.create(e, s);
                    RESULT.addPosition(wxleft, sxright); :} 
-   | ident:id LBRACK expr:e1 RBRACK EQ expr:e2 SEMI:s
+   | ident:id LBRACK expr:e1 RBRACK ASSIGN expr:e2 SEMI:s
                 {: RESULT = StmtArrayAssign.create(id, e1, e2);
                    RESULT.addPosition(idxleft, sxright); :}
 ;
@@ -180,9 +163,24 @@ expr      ::= LIT_INT:a
    | LPAREN:l expr:e RPAREN:r
                 {: RESULT = e;
                    RESULT.addPosition(lxleft, rxright); :}
-   | expr:e1 BIN_OP:b expr:e2
-                {: RESULT = ExprOpBin.create(e1, stringToEnumOper(b), e2);
-                   RESULT.addPosition(e1xleft, e2xright); :}
+   |  expr:a AND expr:z
+                {: RESULT = ExprOpBin.create(a, compil.EnumOper.AND, z);
+                    RESULT.addPosition(axleft, zxright); :}
+   |  expr:a LESS expr:z
+                {: RESULT = ExprOpBin.create(a, compil.EnumOper.LESS, z);
+                   RESULT.addPosition(axleft, zxright); :}
+   |  expr:a PLUS expr:z
+                {: RESULT = ExprOpBin.create(a, compil.EnumOper.PLUS, z);
+                   RESULT.addPosition(axleft, zxright); :}
+   |  expr:a MINUS expr:z
+                {: RESULT = ExprOpBin.create(a, compil.EnumOper.MINUS, z);
+                   RESULT.addPosition(axleft, zxright); :}
+   |  expr:a TIMES expr:z
+                {: RESULT = ExprOpBin.create(a, compil.EnumOper.TIMES, z);
+                   RESULT.addPosition(axleft, zxright); :}
+   |  NOT:a expr:z
+                {: RESULT = ExprOpUn.create(compil.EnumOper.NOT, z);
+                   RESULT.addPosition(axleft, zxright); :}
    | expr:e DOT ident:i LPAREN args:a RPAREN:r
                 {: RESULT = ExprCall.create(e, i, a);
                    RESULT.addPosition(exleft, rxright); :}
@@ -195,9 +193,6 @@ expr      ::= LIT_INT:a
    | LIT_BOOL:b 
                 {: RESULT = ExprLiteralBool.create(b);
                    RESULT.addPosition(bxleft, bxright); :}
-   | NOT:n expr:e 
-                {: RESULT = ExprOpUn.create(EnumOper.NOT, e);
-                   RESULT.addPosition(nxleft, exright); :}
    | expr:e1 LBRACK expr:e2 RBRACK:z
                 {: RESULT = ExprArrayLookup.create(e1, e2);
                    RESULT.addPosition(e1xleft, zxright); :}

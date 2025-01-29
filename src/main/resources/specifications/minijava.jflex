@@ -11,7 +11,6 @@ Ignore     = {WS} | {EOLComment} | {C89Comment}
 Integer    = 0 | [1-9] [0-9]*
 Boolean    = "true" | "false"
 Ident      = [:jletter:] [:jletterdigit:]*
-Bin_op     = "&&" | "<" | "+" | "-" | "*"
 
 %%
 //// Mots Clés
@@ -35,7 +34,13 @@ Bin_op     = "&&" | "<" | "+" | "-" | "*"
 "length"  { return TOKEN(LENGTH);  }
 
 //// Operateurs
-{Bin_op}  { return TOKEN(BIN_OP, yytext()); }
+"&&"      { return TOKEN(AND);     }
+"="       { return TOKEN(ASSIGN);  }
+"<"       { return TOKEN(LESS);    }
+"-"       { return TOKEN(MINUS);   }
+"!"       { return TOKEN(NOT);     }
+"+"       { return TOKEN(PLUS);    }
+"*"       { return TOKEN(TIMES);   }
 
 //// Ponctuations 
 "."       { return TOKEN(DOT);     }
@@ -47,7 +52,6 @@ Bin_op     = "&&" | "<" | "+" | "-" | "*"
 "("       { return TOKEN(LPAREN);  }
 ")"       { return TOKEN(RPAREN);  }
 ","       { return TOKEN(COL);     }
-"="       { return TOKEN(EQ);      }
 "!"       { return TOKEN(NOT);     }
 
 //// Literals, Identificateurs

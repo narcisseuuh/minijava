@@ -312,11 +312,11 @@ public class ToMips extends IRvisitorDefault {
         mw.plus(MIPSRegister.A0, 1);
         mw.fois4(MIPSRegister.A0);
 
-        mw.jumpIn("_new object");
-        regLoad(MIPSRegister.A0, q.arg2());
+        mw.jumpIn("_new_object");
+        //regLoad(MIPSRegister.A0, q.arg2());
 
         mw.storeOffset(MIPSRegister.A0, 0, MIPSRegister.V0);
-        regStore(MIPSRegister.V0, q.result());
+        regStore(MIPSRegister.A0, q.result());
 
         pull(MIPSRegister.A0);
     }
@@ -345,11 +345,12 @@ public class ToMips extends IRvisitorDefault {
         // calcul de l'adresse
         mw.fois4(MIPSRegister.V0);
         mw.plus(MIPSRegister.V0, MIPSRegister.V1);
-
+        mw.plus(MIPSRegister.V0, 4);
+        
         // load offset, using 4 as a constant offset
         // instead of adding it to save an instruction
         regLoad(MIPSRegister.V0, q.arg1());
-        mw.storeOffset(MIPSRegister.V1, 4, MIPSRegister.V0);
+        mw.storeOffset(MIPSRegister.V0, 0, MIPSRegister.V0);
     }
 
     @Override
