@@ -196,16 +196,26 @@ public class BuildSymTab extends AstVisitorDefault {
 
     @Override
     public void visit(final Klass n) {
-        //checkRedef(currentScope.lookupKlass(n.klassId().name()));
         setKlass(n, currentKlass);
         setScope(n, currentScope);
         currentKlass = new InfoKlass(n.klassId().name(), n.parentId().name());
-        System.out.println(getScope(n).lookupKlass(n.klassId().name()));
         this.currentScope = newKlassScope(currentScope, currentKlass);
         n.klassId().accept(this);
         n.parentId().accept(this);
         n.vars().accept(this);
         n.methods().accept(this);
+        currentKlass = getKlass(n);
+        currentScope = getScope(n);
+    }
+
+    @Override
+    public void visit(final KlassMain n) {
+        setKlass(n, currentKlass);
+        setScope(n, currentScope);
+        currentKlass = new InfoKlass(n.klassId().name(), "Object");
+        this.currentScope = newKlassScope(currentScope, currentKlass);
+        n.klassId().accept(this);
+        n.stmt().accept(this);
         currentKlass = getKlass(n);
         currentScope = getScope(n);
     }
